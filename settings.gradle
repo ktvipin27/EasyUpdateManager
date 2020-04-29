@@ -1,0 +1,3 @@
+rootProject.name='InAppUpdateManager'
+include ':app'
+include ':library'

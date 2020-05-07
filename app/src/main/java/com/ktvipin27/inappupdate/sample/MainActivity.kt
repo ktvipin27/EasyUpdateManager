@@ -1,9 +1,11 @@
 package com.ktvipin27.inappupdate.sample
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin27.inappupdate.InAppUpdateManager
 import com.ktvipin27.inappupdate.InAppUpdateType
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,17 +13,31 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        button1.setOnClickListener {
+            startFlexibleUpdate()
+        }
+
+        button2.setOnClickListener {
+            startImmediateUpdate()
+        }
+    }
+
+    private fun startFlexibleUpdate() {
         InAppUpdateManager
             .with(this)
             .apply {
-                updateType = InAppUpdateType.FLEXIBLE
-                shouldResumeUpdate = true
-                shouldShowSnackbar = true
                 listener = {
-                    if (it.isDownloading) {
-                        //showLoader()
-                    }
+                    Log.d("inappupdate", " ${it.installStatus} ")
                 }
+            }
+            .startUpdate()
+    }
+
+    private fun startImmediateUpdate() {
+        InAppUpdateManager
+            .with(this)
+            .apply {
+                updateType = InAppUpdateType.IMMEDIATE
             }
             .startUpdate()
     }

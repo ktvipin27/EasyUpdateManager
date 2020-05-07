@@ -1,6 +1,7 @@
 package com.ktvipin27.inappupdate
 
 import android.content.ContextWrapper
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -34,11 +35,15 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     private var _shouldShowSnackbar = true
     private var _snackbarText = "An update has just been downloaded."
     private var _snackbarAction = "RESTART"
+    private var _snackbarTextColor = Color.WHITE
+    private var _snackbarActionTextColor = Color.RED
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
         Snackbar
             .make(rootView, _snackbarText, Snackbar.LENGTH_INDEFINITE)
             .setAction(_snackbarAction) { completeUpdate() }
+            .setActionTextColor(_snackbarActionTextColor)
+            .setTextColor(_snackbarTextColor)
     }
 
     var updateType

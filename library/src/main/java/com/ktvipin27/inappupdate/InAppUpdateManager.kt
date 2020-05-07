@@ -22,57 +22,80 @@ import com.google.android.play.core.install.model.UpdateAvailability
  *
  */
 class InAppUpdateManager private constructor(private val activity: AppCompatActivity) :
-    ContextWrapper(activity), LifecycleObserver, InstallStateUpdatedListener {
+    ContextWrapper(activity), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
-    private var updateType = AppUpdateType.IMMEDIATE
-
-    private var installStateUpdatedListener: ((state: InstallState?) -> Unit)? = null
+    private val _updateType = AppUpdateType.FLEXIBLE
+    private var _shouldResumeUpdate = true
+    private var _snackbarText = "An update has just been downloaded"
+    private var _snackbarAction = "RESTART"
 
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
-
-        Snackbar.make(
-            rootView,
-            "An update has just been downloaded.",
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction("RESTART") {
-            // Triggers the completion of the update of the app for the flexible flow.
-            appUpdateManager.completeUpdate()
-        }
+        Snackbar
+            .make(rootView, _snackbarText, Snackbar.LENGTH_INDEFINITE)
+            .setAction(_snackbarAction) {
+                appUpdateManager.completeUpdate()
+            }
     }
+
+    private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
+
+    private var updateType = InAppUpdateType.IMMEDIATE
+
+    var shouldResumeUpdate: Boolean
+        get() = _shouldResumeUpdate
+        set(value) {
+            _shouldResumeUpdate = value
+        }
+
+    var snackbarText: String
+        get() = _snackbarText
+        set(value) {
+            _snackbarText = value
+        }
+
+    var snackbarAction: String
+        get() = _snackbarAction
+        set(value) {
+            _snackbarAction = value
+        }
+
+
+    private var installStateUpdatedListener: ((state: InstallState?) -> Unit)? = null
 
     init {
         activity.lifecycle.addObserver(this)
-        appUpdateManager.registerListener(this)
+        appUpdateManager.registerListener(stateUpdatedListener)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        resumeUpdate()
+        if (_shouldResumeUpdate)
+            resumeUpdate()
     }
 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun onDestroy() {
-        appUpdateManager.unregisterListener(this)
+        appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
-    override fun onStateUpdate(state: InstallState) {
+    private fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")
         if (state.installStatus() == InstallStatus.FAILED)
             Log.d(TAG, "onStateUpdate(): failed: %s ${state.installErrorCode()}")
 
         installStateUpdatedListener?.invoke(state)
 
-        if (updateType == AppUpdateType.FLEXIBLE && state.installStatus() == InstallStatus.DOWNLOADED) {
+        if (_updateType == AppUpdateType.FLEXIBLE && state.installStatus() == InstallStatus.DOWNLOADED) {
             // After the update is downloaded, show a notification
             // and request user confirmation to restart the app.
             snackbar.show()
         }
     }
 
-    fun updateType(type: Int): InAppUpdateManager {
+    fun updateType(type: InAppUpdateType): InAppUpdateManager {
         updateType = type
         return this
     }
@@ -96,7 +119,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
                 when {
                     appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE -> {
                         // Request the update.
-                        if (appUpdateInfo.isUpdateTypeAllowed(updateType)) {
+                        if (appUpdateInfo.isUpdateTypeAllowed(_updateType)) {
                             // Start an update.
                             startUpdate(appUpdateInfo)
                         }
@@ -128,7 +151,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
                 TAG,
                 "resumeUpdate(): resuming update. Code: %s ${appUpdateInfo.updateAvailability()}"
             )
-            if (updateType == AppUpdateType.IMMEDIATE &&
+            if (_updateType == AppUpdateType.IMMEDIATE &&
                 appUpdateInfo.updateAvailability() in listOf(
                     UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
                     UpdateAvailability.UPDATE_AVAILABLE
@@ -138,7 +161,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
                 startUpdate(appUpdateInfo)
                 Log.d(TAG, "resumeUpdate(): resuming immediate update.")
             }
-            if (updateType == AppUpdateType.FLEXIBLE &&
+            if (_updateType == AppUpdateType.FLEXIBLE &&
                 appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED
             ) {
                 snackbar.show()
@@ -151,7 +174,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     private fun startUpdate(appUpdateInfo: AppUpdateInfo?) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
-            updateType,
+            _updateType,
             activity,
             REQ_CODE_APP_UPDATE
         )

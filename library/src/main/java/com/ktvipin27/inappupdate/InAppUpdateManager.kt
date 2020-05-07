@@ -83,6 +83,18 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             _snackbarAction = value
         }
 
+    var snackbarTextColor
+        get() = _snackbarTextColor
+        set(value) {
+            _snackbarTextColor = value
+        }
+
+    var snackbarActionTextColor
+        get() = _snackbarActionTextColor
+        set(value) {
+            _snackbarActionTextColor = value
+        }
+
     var listener
         get() = _listener
         set(value) {

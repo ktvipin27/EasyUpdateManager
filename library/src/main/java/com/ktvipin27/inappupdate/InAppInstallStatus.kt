@@ -31,4 +31,13 @@ class InAppInstallStatus(private val installState: InstallState) {
 
     val isUnknown: Boolean
         get() = installState.installStatus() == InstallStatus.UNKNOWN
+
+    val bytesDownloaded: Long
+        get() = installState.bytesDownloaded()
+
+    val totalBytesToDownload: Long
+        get() = installState.totalBytesToDownload()
+
+    val installErrorCode: Int
+        get() = installState.installErrorCode()
 }

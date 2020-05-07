@@ -8,6 +8,9 @@ import com.google.android.play.core.install.model.InstallStatus
  */
 class InAppInstallState(private val installState: InstallState) {
 
+    val installStatus: Int
+        get() = installState.installStatus()
+
     val isDownloading: Boolean
         get() = installState.installStatus() == InstallStatus.DOWNLOADING
 

@@ -25,10 +25,12 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     ContextWrapper(activity), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+
     private val _updateType = AppUpdateType.FLEXIBLE
     private var _shouldResumeUpdate = true
     private var _snackbarText = "An update has just been downloaded"
     private var _snackbarAction = "RESTART"
+    private var _listener: ((state: InstallState?) -> Unit)? = null
 
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
@@ -41,7 +43,14 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
 
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private var updateType = InAppUpdateType.IMMEDIATE
+    var updateType: InAppUpdateType
+        get() = if (_updateType == AppUpdateType.FLEXIBLE) InAppUpdateType.FLEXIBLE
+        else InAppUpdateType.IMMEDIATE
+        set(value) {
+            if (value == InAppUpdateType.FLEXIBLE) AppUpdateType.FLEXIBLE
+            else AppUpdateType.IMMEDIATE
+        }
+
 
     var shouldResumeUpdate: Boolean
         get() = _shouldResumeUpdate
@@ -61,8 +70,12 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             _snackbarAction = value
         }
 
+    var listener: ((InstallState?) -> Unit)?
+        get() = _listener
+        set(value) {
+            _listener = value
+        }
 
-    private var installStateUpdatedListener: ((state: InstallState?) -> Unit)? = null
 
     init {
         activity.lifecycle.addObserver(this)
@@ -83,26 +96,17 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
 
     private fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")
+        _listener?.invoke(state)
+
         if (state.installStatus() == InstallStatus.FAILED)
             Log.d(TAG, "onStateUpdate(): failed: %s ${state.installErrorCode()}")
 
-        installStateUpdatedListener?.invoke(state)
 
         if (_updateType == AppUpdateType.FLEXIBLE && state.installStatus() == InstallStatus.DOWNLOADED) {
             // After the update is downloaded, show a notification
             // and request user confirmation to restart the app.
             snackbar.show()
         }
-    }
-
-    fun updateType(type: InAppUpdateType): InAppUpdateManager {
-        updateType = type
-        return this
-    }
-
-    fun listener(listener: (state: InstallState?) -> Unit): InAppUpdateManager {
-        installStateUpdatedListener = listener
-        return this
     }
 
     fun checkUpdate() = getAppUpdateInfo()

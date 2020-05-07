@@ -31,15 +31,14 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     private var _shouldResumeUpdate = true
     private var _listener: ((status: InAppInstallStatus) -> Unit)? = null
 
+    private var _shouldShowSnackbar = true
     private var _snackbarText = "An update has just been downloaded."
     private var _snackbarAction = "RESTART"
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
         Snackbar
             .make(rootView, _snackbarText, Snackbar.LENGTH_INDEFINITE)
-            .setAction(_snackbarAction) {
-                appUpdateManager.completeUpdate()
-            }
+            .setAction(_snackbarAction) { completeUpdate() }
     }
 
     var updateType
@@ -60,6 +59,12 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         get() = _shouldResumeUpdate
         set(value) {
             _shouldResumeUpdate = value
+        }
+
+    var shouldShowSnackbar
+        get() = _shouldShowSnackbar
+        set(value) {
+            _shouldShowSnackbar = value
         }
 
     var snackbarText
@@ -97,7 +102,9 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
-    fun update() = getAppUpdateInfo()
+    fun startUpdate() = getAppUpdateInfo()
+
+    fun completeUpdate() = appUpdateManager.completeUpdate()
 
     private fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")
@@ -110,7 +117,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         if (_updateType == AppUpdateType.FLEXIBLE && state.installStatus() == InstallStatus.DOWNLOADED) {
             // After the update is downloaded, show a notification
             // and request user confirmation to restart the app.
-            snackbar.show()
+            if (_shouldShowSnackbar) snackbar.show()
         }
     }
 
@@ -171,7 +178,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             if (_updateType == AppUpdateType.FLEXIBLE &&
                 appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED
             ) {
-                snackbar.show()
+                if (_shouldShowSnackbar) snackbar.show()
                 Log.d(TAG, "resumeUpdate(): resuming flexible update")
             }
         }

@@ -16,12 +16,13 @@ class MainActivity : AppCompatActivity() {
             .apply {
                 updateType = InAppUpdateType.FLEXIBLE
                 shouldResumeUpdate = true
+                shouldShowSnackbar = true
                 listener = {
                     if (it.isDownloading) {
                         //showLoader()
                     }
                 }
             }
-            .update()
+            .startUpdate()
     }
 }

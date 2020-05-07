@@ -2,7 +2,6 @@ package com.ktvipin27.inappupdate
 
 import android.content.ContextWrapper
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -111,92 +110,57 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
 
     fun completeUpdate() = appUpdateManager.completeUpdate()
 
-    private fun onStateUpdate(state: InstallState) {
-        Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")
-        _listener?.invoke(InAppInstallStatus(state))
-
-        if (state.installStatus() == InstallStatus.FAILED)
-            Log.d(TAG, "onStateUpdate(): failed: %s ${state.installErrorCode()}")
-
-
-        if (_updateType == AppUpdateType.FLEXIBLE && state.installStatus() == InstallStatus.DOWNLOADED) {
-            // After the update is downloaded, show a notification
-            // and request user confirmation to restart the app.
-            if (_shouldShowSnackbar) snackbar.show()
-        }
-    }
-
     private fun getAppUpdateInfo() {
-
         // Checks that the platform will allow the specified type of update.
-        appUpdateManager.appUpdateInfo.addOnCompleteListener { task ->
-
-            if (task.isSuccessful) {
-
-                val appUpdateInfo = task.result
-
-                when {
-                    appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE -> {
-                        // Request the update.
-                        if (appUpdateInfo.isUpdateTypeAllowed(_updateType)) {
-                            // Start an update.
-                            startUpdate(appUpdateInfo)
-                        }
-
-                        Log.d(
-                            TAG,
-                            "getAppUpdateInfo(): Update available. Version Code: %s ${appUpdateInfo.availableVersionCode()}"
-                        )
-                    }
-                    appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_NOT_AVAILABLE -> {
-                        Log.d(
-                            TAG,
-                            "getAppUpdateInfo(): No Update available. Code: %s ${appUpdateInfo.availableVersionCode()}"
-                        )
-                    }
-                }
-
-            } else {
-                Log.d(TAG, "getAppUpdateInfo(): Update Failed : %s ${task.exception.message}")
+        appUpdateManager.appUpdateInfo.addOnSuccessListener {
+            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                it.isUpdateTypeAllowed(_updateType)
+            ) {
+                // Start an update.
+                startUpdate(it)
             }
         }
-
     }
 
-    private fun resumeUpdate() {
-        // Checks that the platform will allow the specified type of update.
-        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-            Log.d(
-                TAG,
-                "resumeUpdate(): resuming update. Code: %s ${appUpdateInfo.updateAvailability()}"
-            )
-            if (_updateType == AppUpdateType.IMMEDIATE &&
-                appUpdateInfo.updateAvailability() in listOf(
-                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
-                    UpdateAvailability.UPDATE_AVAILABLE
-                )
-            ) {
-                // If an in-app update is already running, resume the update.
-                startUpdate(appUpdateInfo)
-                Log.d(TAG, "resumeUpdate(): resuming immediate update.")
-            }
-            if (_updateType == AppUpdateType.FLEXIBLE &&
-                appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED
-            ) {
-                if (_shouldShowSnackbar) snackbar.show()
-                Log.d(TAG, "resumeUpdate(): resuming flexible update")
-            }
-        }
-
-    }
-
-    private fun startUpdate(appUpdateInfo: AppUpdateInfo?) {
+    private fun startUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             _updateType,
             activity,
             REQ_CODE_APP_UPDATE
         )
+    }
+
+    private fun resumeUpdate() {
+        // Checks that the platform will allow the specified type of update.
+        appUpdateManager.appUpdateInfo.addOnSuccessListener {
+            if (_updateType == AppUpdateType.IMMEDIATE &&
+                it.updateAvailability() in listOf(
+                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
+                    UpdateAvailability.UPDATE_AVAILABLE
+                )
+            ) {
+                // If an in-app update is already running, resume the update.
+                startUpdate(it)
+            }
+            if (_updateType == AppUpdateType.FLEXIBLE &&
+                it.installStatus() == InstallStatus.DOWNLOADED
+            ) {
+                if (_shouldShowSnackbar) snackbar.show()
+            }
+        }
+    }
+
+    private fun onStateUpdate(state: InstallState) {
+        _listener?.invoke(InAppInstallStatus(state))
+
+        if (_updateType == AppUpdateType.FLEXIBLE &&
+            state.installStatus() == InstallStatus.DOWNLOADED
+        ) {
+            // After the update is downloaded, show a notification
+            // and request user confirmation to restart the app.
+            if (_shouldShowSnackbar) snackbar.show()
+        }
     }
 
     companion object {

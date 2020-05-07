@@ -17,7 +17,9 @@ class MainActivity : AppCompatActivity() {
                 updateType = InAppUpdateType.FLEXIBLE
                 shouldResumeUpdate = true
                 listener = {
-                    
+                    if (it.isDownloading) {
+                        //showLoader()
+                    }
                 }
             }
             .checkUpdate()

@@ -25,13 +25,14 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     ContextWrapper(activity), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+    private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private val _updateType = AppUpdateType.FLEXIBLE
+    private var _updateType = AppUpdateType.FLEXIBLE
     private var _shouldResumeUpdate = true
+    private var _listener: ((state: InAppInstallStatus) -> Unit)? = null
+
     private var _snackbarText = "An update has just been downloaded"
     private var _snackbarAction = "RESTART"
-    private var _listener: ((state: InstallState?) -> Unit)? = null
-
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
         Snackbar
@@ -41,14 +42,19 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             }
     }
 
-    private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
     var updateType: InAppUpdateType
-        get() = if (_updateType == AppUpdateType.FLEXIBLE) InAppUpdateType.FLEXIBLE
-        else InAppUpdateType.IMMEDIATE
+        get() =
+            if (_updateType == AppUpdateType.FLEXIBLE)
+                InAppUpdateType.FLEXIBLE
+            else
+                InAppUpdateType.IMMEDIATE
         set(value) {
-            if (value == InAppUpdateType.FLEXIBLE) AppUpdateType.FLEXIBLE
-            else AppUpdateType.IMMEDIATE
+            _updateType =
+                if (value == InAppUpdateType.FLEXIBLE)
+                    AppUpdateType.FLEXIBLE
+                else
+                    AppUpdateType.IMMEDIATE
         }
 
 
@@ -70,7 +76,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             _snackbarAction = value
         }
 
-    var listener: ((InstallState?) -> Unit)?
+    var listener: ((InAppInstallStatus) -> Unit)?
         get() = _listener
         set(value) {
             _listener = value
@@ -88,15 +94,16 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             resumeUpdate()
     }
 
-
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun onDestroy() {
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
+    fun checkUpdate() = getAppUpdateInfo()
+
     private fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")
-        _listener?.invoke(state)
+        _listener?.invoke(InAppInstallStatus(state))
 
         if (state.installStatus() == InstallStatus.FAILED)
             Log.d(TAG, "onStateUpdate(): failed: %s ${state.installErrorCode()}")
@@ -108,8 +115,6 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             snackbar.show()
         }
     }
-
-    fun checkUpdate() = getAppUpdateInfo()
 
     private fun getAppUpdateInfo() {
 

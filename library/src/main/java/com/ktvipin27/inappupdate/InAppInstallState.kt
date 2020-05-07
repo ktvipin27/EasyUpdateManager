@@ -4,9 +4,9 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.model.InstallStatus
 
 /**
- * A wrapper class for AppUpdateInfo and InstallState
+ * A wrapper class for InstallState
  */
-class InAppInstallStatus(private val installState: InstallState) {
+class InAppInstallState(private val installState: InstallState) {
 
     val isDownloading: Boolean
         get() = installState.installStatus() == InstallStatus.DOWNLOADING

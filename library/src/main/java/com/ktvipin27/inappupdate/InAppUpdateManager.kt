@@ -29,7 +29,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
 
     private var _updateType = AppUpdateType.FLEXIBLE
     private var _shouldResumeUpdate = true
-    private var _listener: ((status: InAppInstallStatus) -> Unit)? = null
+    private var _listener: ((state: InAppInstallState) -> Unit)? = null
 
     private var _shouldShowSnackbar = true
     private var _snackbarText = "An update has just been downloaded."
@@ -147,7 +147,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     }
 
     private fun onStateUpdate(state: InstallState) {
-        _listener?.invoke(InAppInstallStatus(state))
+        _listener?.invoke(InAppInstallState(state))
 
         if (_updateType == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED

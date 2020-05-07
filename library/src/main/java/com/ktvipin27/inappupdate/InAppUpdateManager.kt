@@ -29,9 +29,9 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
 
     private var _updateType = AppUpdateType.FLEXIBLE
     private var _shouldResumeUpdate = true
-    private var _listener: ((state: InAppInstallStatus) -> Unit)? = null
+    private var _listener: ((status: InAppInstallStatus) -> Unit)? = null
 
-    private var _snackbarText = "An update has just been downloaded"
+    private var _snackbarText = "An update has just been downloaded."
     private var _snackbarAction = "RESTART"
     private val snackbar: Snackbar by lazy {
         val rootView = activity.window.decorView.findViewById<View>(android.R.id.content)
@@ -42,8 +42,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
             }
     }
 
-
-    var updateType: InAppUpdateType
+    var updateType
         get() =
             if (_updateType == AppUpdateType.FLEXIBLE)
                 InAppUpdateType.FLEXIBLE
@@ -57,26 +56,25 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
                     AppUpdateType.IMMEDIATE
         }
 
-
-    var shouldResumeUpdate: Boolean
+    var shouldResumeUpdate
         get() = _shouldResumeUpdate
         set(value) {
             _shouldResumeUpdate = value
         }
 
-    var snackbarText: String
+    var snackbarText
         get() = _snackbarText
         set(value) {
             _snackbarText = value
         }
 
-    var snackbarAction: String
+    var snackbarAction
         get() = _snackbarAction
         set(value) {
             _snackbarAction = value
         }
 
-    var listener: ((InAppInstallStatus) -> Unit)?
+    var listener
         get() = _listener
         set(value) {
             _listener = value
@@ -99,7 +97,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
-    fun checkUpdate() = getAppUpdateInfo()
+    fun update() = getAppUpdateInfo()
 
     private fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "onStateUpdate(): installStatus: %s ${state.installStatus()}")

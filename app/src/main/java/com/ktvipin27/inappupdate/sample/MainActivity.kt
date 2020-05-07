@@ -22,6 +22,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            .checkUpdate()
+            .update()
     }
 }

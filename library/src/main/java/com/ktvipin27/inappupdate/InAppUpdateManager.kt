@@ -117,12 +117,12 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
                 it.isUpdateTypeAllowed(_updateType)
             ) {
                 // Start an update.
-                startUpdate(it)
+                requestUpdate(it)
             }
         }
     }
 
-    private fun startUpdate(appUpdateInfo: AppUpdateInfo) {
+    private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             _updateType,
@@ -132,21 +132,16 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
     }
 
     private fun resumeUpdate() {
-        // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
-            if (_updateType == AppUpdateType.IMMEDIATE &&
-                it.updateAvailability() in listOf(
+            when {
+                _updateType == AppUpdateType.IMMEDIATE && it.updateAvailability() in listOf(
                     UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
                     UpdateAvailability.UPDATE_AVAILABLE
-                )
-            ) {
-                // If an in-app update is already running, resume the update.
-                startUpdate(it)
-            }
-            if (_updateType == AppUpdateType.FLEXIBLE &&
-                it.installStatus() == InstallStatus.DOWNLOADED
-            ) {
-                if (_shouldShowSnackbar) snackbar.show()
+                ) -> requestUpdate(it)
+
+                _updateType == AppUpdateType.FLEXIBLE &&
+                        it.installStatus() == InstallStatus.DOWNLOADED && _shouldShowSnackbar ->
+                    snackbar.show()
             }
         }
     }
@@ -157,7 +152,7 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         if (_updateType == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED
         ) {
-            // After the update is downloaded, show a notification
+            // After the update is downloaded, show a snackbar
             // and request user confirmation to restart the app.
             if (_shouldShowSnackbar) snackbar.show()
         }
@@ -167,6 +162,5 @@ class InAppUpdateManager private constructor(private val activity: AppCompatActi
         const val REQ_CODE_APP_UPDATE = 54321
 
         fun with(activity: AppCompatActivity) = InAppUpdateManager(activity)
-        private const val TAG = "InAppUpdateManager"
     }
 }

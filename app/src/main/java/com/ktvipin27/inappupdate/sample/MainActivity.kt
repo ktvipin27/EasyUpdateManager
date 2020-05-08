@@ -1,7 +1,6 @@
 package com.ktvipin27.inappupdate.sample
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin27.inappupdate.InAppUpdateManager
 import com.ktvipin27.inappupdate.InAppUpdateType
@@ -25,11 +24,6 @@ class MainActivity : AppCompatActivity() {
     private fun startFlexibleUpdate() {
         InAppUpdateManager
             .with(this)
-            .apply {
-                listener = {
-                    Log.d("inappupdate", " ${it.installStatus} ")
-                }
-            }
             .startUpdate()
     }
 

@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="message_update_downloaded">An update has just been downloaded.</string>
+    <string name="action_restart">RESTART</string>
+</resources>

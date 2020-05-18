@@ -33,6 +33,12 @@ class MainActivity : AppCompatActivity() {
             .apply {
                 updateType = InAppUpdateType.IMMEDIATE
             }
+            .listener {
+
+            }
+            .snackbar {
+                actionText = "OK"
+            }
             .startUpdate()
     }
 }

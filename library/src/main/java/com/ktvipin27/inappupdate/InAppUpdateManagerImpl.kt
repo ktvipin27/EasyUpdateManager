@@ -28,7 +28,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
 
     private var _resumeUpdate = true
     private var _updateType = InAppUpdateType.FLEXIBLE
-    private var listener: ((state: InAppInstallState) -> Unit)? = null
+    private var listener: ((state: InAppInstallState) -> Unit) = {}
 
     var updateType
         get() = _updateType
@@ -109,7 +109,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     }
 
     private fun onStateUpdate(state: InstallState) {
-        listener?.invoke(InAppInstallState(state))
+        listener.invoke(InAppInstallState(state))
 
         if (_updateType.value == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED

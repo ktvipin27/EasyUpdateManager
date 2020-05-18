@@ -2,11 +2,9 @@ package com.ktvipin27.inappupdate
 
 import androidx.appcompat.app.AppCompatActivity
 
-class InAppUpdateManager {
+object InAppUpdateManager {
 
-    companion object {
-        const val REQ_CODE_APP_UPDATE = 54321
+    internal const val REQ_CODE_APP_UPDATE = 54321
 
-        fun with(activity: AppCompatActivity) = InAppUpdateManagerImpl(activity)
-    }
+    fun with(activity: AppCompatActivity) = InAppUpdateManagerImpl(activity)
 }

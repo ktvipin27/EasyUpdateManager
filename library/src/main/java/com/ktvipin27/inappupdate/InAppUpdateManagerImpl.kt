@@ -16,7 +16,7 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.ktvipin27.inappupdate.InAppUpdateManager.Companion.REQ_CODE_APP_UPDATE
+import com.ktvipin27.inappupdate.InAppUpdateManager.REQ_CODE_APP_UPDATE
 
 /**
  * A simple implementation of the Android In-App Update API.

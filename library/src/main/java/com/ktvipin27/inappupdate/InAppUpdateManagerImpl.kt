@@ -27,21 +27,13 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     val inAppSnackbar: InAppSnackbar = InAppSnackbar(activity) { completeUpdate() }
 
     private var _resumeUpdate = true
-    private var _updateType = AppUpdateType.FLEXIBLE
+    private var _updateType = InAppUpdateType.FLEXIBLE
     private var listener: ((state: InAppInstallState) -> Unit)? = null
 
     var updateType
-        get() =
-            if (_updateType == AppUpdateType.FLEXIBLE)
-                InAppUpdateType.FLEXIBLE
-            else
-                InAppUpdateType.IMMEDIATE
+        get() = _updateType
         set(value) {
-            _updateType =
-                if (value == InAppUpdateType.FLEXIBLE)
-                    AppUpdateType.FLEXIBLE
-                else
-                    AppUpdateType.IMMEDIATE
+            _updateType = value
         }
 
     var resumeUpdate
@@ -84,7 +76,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
         // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                it.isUpdateTypeAllowed(_updateType)
+                it.isUpdateTypeAllowed(_updateType.value)
             ) {
                 // Start an update.
                 requestUpdate(it)
@@ -95,7 +87,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
-            _updateType,
+            _updateType.value,
             activity,
             REQ_CODE_APP_UPDATE
         )
@@ -104,12 +96,12 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     private fun resumeUpdate() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             when {
-                _updateType == AppUpdateType.IMMEDIATE && it.updateAvailability() in listOf(
+                _updateType.value == AppUpdateType.IMMEDIATE && it.updateAvailability() in listOf(
                     UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
                     UpdateAvailability.UPDATE_AVAILABLE
                 ) -> requestUpdate(it)
 
-                _updateType == AppUpdateType.FLEXIBLE &&
+                _updateType.value == AppUpdateType.FLEXIBLE &&
                         it.installStatus() == InstallStatus.DOWNLOADED ->
                     inAppSnackbar.show()
             }
@@ -119,7 +111,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     private fun onStateUpdate(state: InstallState) {
         listener?.invoke(InAppInstallState(state))
 
-        if (_updateType == AppUpdateType.FLEXIBLE &&
+        if (_updateType.value == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED
         ) {
             // After the update is downloaded, show a snackbar

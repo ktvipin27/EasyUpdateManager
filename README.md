@@ -23,7 +23,7 @@ There are two update modes.
 ## Usage
 
 A simple implemenatation of the InAppUpdateManager is
-```java
+```kotlin
 InAppUpdateManager
     .with(this)
     .startUpdate()
@@ -34,7 +34,7 @@ InAppUpdateManager provides a set of customisation options too. You can apply th
 
 By default, update type is set to `InAppUpdateType.FLEXIBLE`.
 You can implement force update by setting update type to `InAppUpdateType.IMMEDIATE`
-```java
+```kotlin
 InAppUpdateManager
     .with(this)
     .apply {
@@ -46,7 +46,7 @@ InAppUpdateManager
 
 We can define wether to resume updates or not if the user leaves the screen and come back after some time.
 By deafult this is set to true
-```java
+```kotlin
 InAppUpdateManager
     .with(this)
     .apply {
@@ -58,7 +58,7 @@ InAppUpdateManager
 
 Once the flexible update is downloaded, InAppUpdateManager will show a snackbar to get user confirmation to install the update.
 You can customise the snackbar like below
-```java
+```kotlin
 InAppUpdateManager
     .with(this)
     .apply {
@@ -73,7 +73,7 @@ InAppUpdateManager
 * **Listener**
 
 InAppUpdateManager provides an option to set listener for install state changes.
-```java
+```kotlin
 InAppUpdateManager
     .with(this)
     .apply {
@@ -96,7 +96,7 @@ InAppUpdateManager
 * **Custom Install Alert**
 
 Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell InAppUpdateManager to don`t show the snackbar and you can show your custom alert by listening to install state.
-```java
+```kotlin
 val inAppUpdateManager = InAppUpdateManager.with(this)
 inAppUpdateManager
     .apply {
@@ -109,7 +109,7 @@ inAppUpdateManager
 inAppUpdateManager.startUpdate()
 ```
 On user confirmation, please call
-```java
+```kotlin
 inAppUpdateManager.completeUpdate()
 ```
 

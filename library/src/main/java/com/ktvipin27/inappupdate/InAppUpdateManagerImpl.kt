@@ -27,25 +27,14 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
     private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
 
-    private var _resumeUpdate = true
-    private var _updateType = InAppUpdateType.FLEXIBLE
     private var listener: ((state: InAppInstallState) -> Unit) = {}
     private val immediateUpdateResumeStates = mutableSetOf(
         UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
         UpdateAvailability.UPDATE_AVAILABLE
     )
 
-    var updateType
-        get() = _updateType
-        set(value) {
-            _updateType = value
-        }
-
-    var resumeUpdate
-        get() = _resumeUpdate
-        set(value) {
-            _resumeUpdate = value
-        }
+    var resumeUpdate = true
+    var updateType = InAppUpdateType.FLEXIBLE
 
     var forceUpdateCancellable = false
         set(value) {
@@ -73,7 +62,16 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        resumeUpdate()
+        when {
+            updateType.value == AppUpdateType.FLEXIBLE && resumeUpdate ->
+                appUpdateManager.appUpdateInfo.addOnSuccessListener {
+                    if (it.installStatus() == InstallStatus.DOWNLOADED) inAppSnackbar.show()
+                }
+            updateType.value == AppUpdateType.IMMEDIATE && (resumeUpdate || !forceUpdateCancellable) ->
+                appUpdateManager.appUpdateInfo.addOnSuccessListener {
+                    if (it.updateAvailability() in immediateUpdateResumeStates) requestUpdate(it)
+                }
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -89,7 +87,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                it.isUpdateTypeAllowed(_updateType.value)
+                it.isUpdateTypeAllowed(updateType.value)
             ) {
                 // Start an update.
                 requestUpdate(it)
@@ -100,29 +98,16 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
-            _updateType.value,
+            updateType.value,
             activityRef.get(),
             REQ_CODE_APP_UPDATE
         )
     }
 
-    private fun resumeUpdate() {
-        when {
-            _updateType.value == AppUpdateType.FLEXIBLE && resumeUpdate ->
-                appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.installStatus() == InstallStatus.DOWNLOADED) inAppSnackbar.show()
-                }
-            _updateType.value == AppUpdateType.IMMEDIATE && (resumeUpdate || !forceUpdateCancellable) ->
-                appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.updateAvailability() in immediateUpdateResumeStates) requestUpdate(it)
-                }
-        }
-    }
-
     private fun onStateUpdate(state: InstallState) {
         listener.invoke(InAppInstallState(state))
 
-        if (_updateType.value == AppUpdateType.FLEXIBLE &&
+        if (updateType.value == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED
         ) {
             // After the update is downloaded, show a snackbar

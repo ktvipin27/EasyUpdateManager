@@ -10,7 +10,6 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
-import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.ktvipin27.inappupdate.InAppUpdateManager.REQ_CODE_APP_UPDATE
@@ -25,8 +24,8 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
-    private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
 
+    private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
     private var listener: ((state: InAppInstallState) -> Unit) = {}
     private val options = InAppUpdateOptions()
 
@@ -45,6 +44,10 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         return this
     }
 
+    fun startUpdate() = getAppUpdateInfo()
+
+    fun completeUpdate() = appUpdateManager.completeUpdate()
+
     init {
         activityRef.get()?.lifecycle?.addObserver(this)
         appUpdateManager.registerListener(stateUpdatedListener)
@@ -53,13 +56,15 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         when {
-            options.updateType.value == AppUpdateType.FLEXIBLE && options.resumeUpdate ->
+            options.isFlexibleUpdate && options.resumeUpdate ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.installStatus() == InstallStatus.DOWNLOADED) inAppSnackbar.show()
+                    if (it.installStatus() == InstallStatus.DOWNLOADED && !options.customNotification) inAppSnackbar.show()
                 }
-            options.updateType.value == AppUpdateType.IMMEDIATE && (options.resumeUpdate || !options.forceUpdateCancellable) ->
+            options.isImmediateUpdate && (options.resumeUpdate || !options.forceUpdateCancellable) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.updateAvailability() in options.immediateUpdateResumeStates) requestUpdate(it)
+                    if (it.updateAvailability() in options.immediateUpdateResumeStates) requestUpdate(
+                        it
+                    )
                 }
         }
     }
@@ -69,12 +74,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
-    fun startUpdate() = getAppUpdateInfo()
-
-    fun completeUpdate() = appUpdateManager.completeUpdate()
-
     private fun getAppUpdateInfo() {
-        // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
                 if (options.updateType == InAppUpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
@@ -102,12 +102,8 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun onStateUpdate(state: InstallState) {
         listener.invoke(InAppInstallState(state))
 
-        if (options.updateType.value == AppUpdateType.FLEXIBLE &&
-            state.installStatus() == InstallStatus.DOWNLOADED
-        ) {
-            // After the update is downloaded, show a snackbar
-            // and request user confirmation to restart the app.
-            inAppSnackbar.show()
-        }
+        if (options.isFlexibleUpdate && state.installStatus() == InstallStatus.DOWNLOADED
+            && !options.customNotification
+        ) inAppSnackbar.show()
     }
 }

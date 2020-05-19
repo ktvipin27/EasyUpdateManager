@@ -13,7 +13,6 @@ import java.lang.ref.WeakReference
 class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction: () -> Unit) :
     ContextWrapper(activityRef.get()) {
 
-    private var _enabled = true
     private var _snackbarText = getString(R.string.message_update_downloaded)
     private var _snackbarAction = getString(R.string.action_restart)
     private var _snackbarTextColor = ContextCompat.getColor(this, R.color.color_snackbar_text)
@@ -21,7 +20,8 @@ class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction
         ContextCompat.getColor(this, R.color.color_snackbar_action)
 
     private val snackbar: Snackbar? by lazy {
-        val rootView = activityRef.get()?.window?.decorView?.findViewById<View>(android.R.id.content)
+        val rootView =
+            activityRef.get()?.window?.decorView?.findViewById<View>(android.R.id.content)
         rootView?.let {
             Snackbar
                 .make(it, _snackbarText, Snackbar.LENGTH_INDEFINITE)
@@ -55,15 +55,8 @@ class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction
             _snackbarActionTextColor = value
         }
 
-    var enabled
-        get() = _enabled
-        set(value) {
-            _enabled = value
-        }
-
     internal fun show() {
-        if (_enabled)
-            snackbar?.show()
+        snackbar?.show()
     }
 
 }

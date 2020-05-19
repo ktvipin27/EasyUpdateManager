@@ -1,5 +1,6 @@
 package com.ktvipin27.inappupdate
 
+import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
@@ -9,7 +10,8 @@ data class InAppUpdateOptions(
     var resumeUpdate: Boolean = true,
     var updateType: InAppUpdateType = InAppUpdateType.FLEXIBLE,
     var updatePriority: InAppUpdatePriority = InAppUpdatePriority.ONE,
-    var daysForFlexibleUpdate: Int = 0
+    var daysForFlexibleUpdate: Int = 0,
+    var customNotification: Boolean = false
 ) {
 
     val immediateUpdateResumeStates = mutableSetOf(
@@ -25,4 +27,7 @@ data class InAppUpdateOptions(
             else
                 immediateUpdateResumeStates.add(UpdateAvailability.UPDATE_AVAILABLE)
         }
+
+    internal val isFlexibleUpdate = updateType.value == AppUpdateType.FLEXIBLE
+    internal val isImmediateUpdate = updateType.value == AppUpdateType.IMMEDIATE
 }

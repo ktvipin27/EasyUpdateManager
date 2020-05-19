@@ -1,6 +1,10 @@
 # InAppUpdateManager
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/zerobranch/android-remote-debugger/blob/master/LICENSE)
+
 A wrapper for Android [In-App-Update Library](https://developer.android.com/guide/playcore/in-app-updates)
 
+
+Built with ❤︎ by [Vipin KT](https://twitter.com/ktvipin27)
 
 # Getting Started
 
@@ -28,32 +32,33 @@ InAppUpdateManager
     .with(this)
     .startUpdate()
 ```
-InAppUpdateManager provides a set of customisation options.
 
-* **Update Type**
+## Options
 
-By default, update type is set to `InAppUpdateType.FLEXIBLE`.
-You can implement immediate update by setting update type to `InAppUpdateType.IMMEDIATE`
+InAppUpdateManager provides a set of options for customisation.
+
 ```kotlin
 InAppUpdateManager
     .with(this)
     .options {
+        resumeUpdate = true
         updateType = InAppUpdateType.IMMEDIATE
+        updatePriority = InAppUpdatePriority.FIVE
+        daysForFlexibleUpdate = 2
+        customNotification = false
     }
     .startUpdate()
 ```
-* **Resume Update**
 
-We can define wether to resume updates or not if the user leaves the screen and come back after some time.
-By deafult this is set to true
-```kotlin
-InAppUpdateManager
-    .with(this)
-    .options {
-        resumeUpdate = false
-    }
-    .startUpdate()
-```
+
+| Option                  | Description                                                                                                                                                                                 | Values                                                                                                                             | Default Value            |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| `updateType`            | Type of update                                                                                                                                                                              | InAppUpdateType.FLEXIBLE, InAppUpdateType.IMMEDIATE                                                                                | InAppUpdateType.FLEXIBLE |
+| `resumeUpdate`          | Wether to resume updates or not if the user leaves the screen and come back after some time.                                                                                                | true, false                                                                                                                        | true                     |
+| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | InAppUpdatePriority.ONE, InAppUpdatePriority.TWO,  InAppUpdatePriority.THREE,  InAppUpdatePriority.FOUR,  InAppUpdatePriority.FIVE | InAppUpdatePriority.ONE  |
+| `daysForFlexibleUpdate` | To check for the number of days that have passed since the Google Play Store learns of an update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-staleness)) | Any Integer                                                                                                                        | 0                        |
+| `customNotification`    | To show some custom alert instead of the snackbar                                                                                                                                           | true, false                                                                                                                         | false                    |
+
 * **Snackbar**
 
 Once the flexible update is downloaded, InAppUpdateManager will show a snackbar to get user confirmation to install the update.
@@ -93,7 +98,7 @@ InAppUpdateManager
 
 * **Custom Install Alert**
 
-Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell InAppUpdateManager to don`t show the snackbar and you can show your custom alert by listening to install state.
+Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell InAppUpdateManager to don`t show the snackbar by setting `customNotification = false` and how your custom alert by listening to install state.
 ```kotlin
 val inAppUpdateManager = InAppUpdateManager.with(this)
 inAppUpdateManager

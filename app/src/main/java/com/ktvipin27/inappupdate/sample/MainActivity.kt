@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private fun startImmediateUpdate() {
         InAppUpdateManager
             .with(this)
-            .apply {
+            .options {
                 updateType = InAppUpdateType.IMMEDIATE
                 forceUpdateCancellable = true
             }

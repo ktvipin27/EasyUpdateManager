@@ -28,24 +28,12 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
 
     private var listener: ((state: InAppInstallState) -> Unit) = {}
-    private val immediateUpdateResumeStates = mutableSetOf(
-        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
-        UpdateAvailability.UPDATE_AVAILABLE
-    )
+    private val options = InAppUpdateOptions()
 
-    var resumeUpdate = true
-    var updateType = InAppUpdateType.FLEXIBLE
-    var updatePriority = InAppUpdatePriority.ONE
-    var daysForFlexibleUpdate = 0
-
-    var forceUpdateCancellable = false
-        set(value) {
-            field = value
-            if (value)
-                immediateUpdateResumeStates.remove(UpdateAvailability.UPDATE_AVAILABLE)
-            else
-                immediateUpdateResumeStates.add(UpdateAvailability.UPDATE_AVAILABLE)
-        }
+    fun options(block: InAppUpdateOptions.() -> Unit): InAppUpdateManagerImpl {
+        block(options)
+        return this
+    }
 
     fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
         block(inAppSnackbar)
@@ -65,13 +53,13 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         when {
-            updateType.value == AppUpdateType.FLEXIBLE && resumeUpdate ->
+            options.updateType.value == AppUpdateType.FLEXIBLE && options.resumeUpdate ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
                     if (it.installStatus() == InstallStatus.DOWNLOADED) inAppSnackbar.show()
                 }
-            updateType.value == AppUpdateType.IMMEDIATE && (resumeUpdate || !forceUpdateCancellable) ->
+            options.updateType.value == AppUpdateType.IMMEDIATE && (options.resumeUpdate || !options.forceUpdateCancellable) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.updateAvailability() in immediateUpdateResumeStates) requestUpdate(it)
+                    if (it.updateAvailability() in options.immediateUpdateResumeStates) requestUpdate(it)
                 }
         }
     }
@@ -89,11 +77,11 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
-                if (updateType == InAppUpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
-                        && it.clientVersionStalenessDays() >= daysForFlexibleUpdate else true
+                if (options.updateType == InAppUpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
+                        && it.clientVersionStalenessDays() >= options.daysForFlexibleUpdate else true
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && it.isUpdateTypeAllowed(updateType.value)
-                && it.updatePriority() >= updatePriority.value
+                && it.isUpdateTypeAllowed(options.updateType.value)
+                && it.updatePriority() >= options.updatePriority.value
                 && updateDatesSatisfied
             ) {
                 // Start an update.
@@ -105,7 +93,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
-            updateType.value,
+            options.updateType.value,
             activityRef.get(),
             REQ_CODE_APP_UPDATE
         )
@@ -114,7 +102,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun onStateUpdate(state: InstallState) {
         listener.invoke(InAppInstallState(state))
 
-        if (updateType.value == AppUpdateType.FLEXIBLE &&
+        if (options.updateType.value == AppUpdateType.FLEXIBLE &&
             state.installStatus() == InstallStatus.DOWNLOADED
         ) {
             // After the update is downloaded, show a snackbar

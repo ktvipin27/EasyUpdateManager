@@ -28,16 +28,16 @@ InAppUpdateManager
     .with(this)
     .startUpdate()
 ```
-InAppUpdateManager provides a set of customisation options too. You can apply them by using kotlin `apply` function.
+InAppUpdateManager provides a set of customisation options.
 
 * **Update Type**
 
 By default, update type is set to `InAppUpdateType.FLEXIBLE`.
-You can implement force update by setting update type to `InAppUpdateType.IMMEDIATE`
+You can implement immediate update by setting update type to `InAppUpdateType.IMMEDIATE`
 ```kotlin
 InAppUpdateManager
     .with(this)
-    .apply {
+    .options {
         updateType = InAppUpdateType.IMMEDIATE
     }
     .startUpdate()
@@ -49,23 +49,23 @@ By deafult this is set to true
 ```kotlin
 InAppUpdateManager
     .with(this)
-    .apply {
-        shouldResumeUpdate = false
+    .options {
+        resumeUpdate = false
     }
     .startUpdate()
 ```
 * **Snackbar**
 
 Once the flexible update is downloaded, InAppUpdateManager will show a snackbar to get user confirmation to install the update.
-You can customise the snackbar like below
+You can customise the snackbar with `snackbar` lambda.
 ```kotlin
 InAppUpdateManager
     .with(this)
-    .apply {
-        snackbarText = getString(R.string.update_confirmation_message)
-        snackbarTextColor = ContextCompat.getColor(this,R.color.snackbar_text_color)
-        snackbarAction = getString(R.string.update_confirmation_action)
-        snackbarActionTextColor = ContextCompat.getColor(this,R.color.snackbar_action_color)
+    .snackbar {
+        text = getString(R.string.update_confirmation_message)
+        textColor = ContextCompat.getColor(this,R.color.snackbar_text_color)
+        action = getString(R.string.update_confirmation_action)
+        actionTextColor = ContextCompat.getColor(this,R.color.snackbar_action_color)
     }
     .startUpdate()
 ```
@@ -76,18 +76,16 @@ InAppUpdateManager provides an option to set listener for install state changes.
 ```kotlin
 InAppUpdateManager
     .with(this)
-    .apply {
-        listener = { state ->
-            when {
-                state.isCanceled -> Log.d(TAG, "Canceled")
-                state.isDownloaded -> Log.d(TAG, "Downloaded ${state.bytesDownloaded}")
-                state.isDownloading -> Log.d(TAG, "Downloading ${state.totalBytesToDownload}")
-                state.isFailed -> Log.d(TAG, "Failed ${state.installErrorCode}")
-                state.isInstalled -> Log.d(TAG, "Installed")
-                state.isInstalling -> Log.d(TAG, "Installing ${state.bytesDownloaded}")
-                state.isPending -> Log.d(TAG, "Pending ${state.totalBytesToDownload}")
-                state.isUnknown -> Log.d(TAG, "Unknown")
-            }
+    .listener { state ->
+        when {
+            state.isCanceled -> Log.d(TAG, "Canceled")
+            state.isDownloaded -> Log.d(TAG, "Downloaded ${state.bytesDownloaded}")
+            state.isDownloading -> Log.d(TAG, "Downloading ${state.totalBytesToDownload}")
+            state.isFailed -> Log.d(TAG, "Failed ${state.installErrorCode}")
+            state.isInstalled -> Log.d(TAG, "Installed")
+            state.isInstalling -> Log.d(TAG, "Installing ${state.bytesDownloaded}")
+            state.isPending -> Log.d(TAG, "Pending ${state.totalBytesToDownload}")
+            state.isUnknown -> Log.d(TAG, "Unknown")
         }
     }
     .startUpdate()
@@ -99,13 +97,13 @@ Sometimes you may want to show some custom alert instead of the snackbar. In thi
 ```kotlin
 val inAppUpdateManager = InAppUpdateManager.with(this)
 inAppUpdateManager
-    .apply {
-        shouldShowSnackbar = false
-        listener = { state ->
-            if (state.isDownloaded)
-                showInstallAlert()
-            }
-        }
+    .options {
+        customNotification = false
+    }
+    .listener { state ->
+        if (state.isDownloaded)
+            showInstallAlert()
+    }
 inAppUpdateManager.startUpdate()
 ```
 On user confirmation, please call

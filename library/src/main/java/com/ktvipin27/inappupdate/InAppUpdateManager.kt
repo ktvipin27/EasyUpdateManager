@@ -19,6 +19,12 @@ package com.ktvipin27.inappupdate
 import androidx.appcompat.app.AppCompatActivity
 import java.lang.ref.WeakReference
 
+/**
+ * A wrapper for Android In-App Update API.
+ * (https://developer.android.com/guide/playcore/in-app-updates)
+ *
+ * Created by Vipin KT on 29/04/20
+ */
 object InAppUpdateManager {
 
     internal const val REQ_CODE_APP_UPDATE = 54321

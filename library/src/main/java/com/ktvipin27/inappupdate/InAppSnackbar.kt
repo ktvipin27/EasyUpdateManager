@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import java.lang.ref.WeakReference
 
 /**
+ * A [Snackbar] wrapper class with a set of customization options.
+ *
  * Created by Vipin KT on 18/05/20
  */
 class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction: () -> Unit) :

@@ -20,6 +20,8 @@ import com.google.android.play.core.install.model.AppUpdateType
 
 /**
  * Identifiers for the different types of developer triggered updates.
+ *
+ * Created by Vipin KT on 07/05/20
  */
 enum class InAppUpdateType(val value: Int) {
     FLEXIBLE(AppUpdateType.FLEXIBLE),

@@ -20,6 +20,8 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
+ * A set of customization options for [InAppUpdateManager]
+ *
  * Created by Vipin KT on 19/05/20
  */
 data class InAppUpdateOptions(

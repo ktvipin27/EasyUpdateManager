@@ -32,8 +32,10 @@ import com.ktvipin27.inappupdate.InAppUpdateManager.REQ_CODE_APP_UPDATE
 import java.lang.ref.WeakReference
 
 /**
- * A simple implementation of the Android In-App Update API.
+ * A wrapper for Android In-App Update API.
+ * (https://developer.android.com/guide/playcore/in-app-updates)
  *
+ * Created by Vipin KT on 08/05/20
  */
 class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakReference<AppCompatActivity>) :
     ContextWrapper(activityRef.get()), LifecycleObserver {

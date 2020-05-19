@@ -19,7 +19,9 @@ package com.ktvipin27.inappupdate
 import com.google.android.play.core.install.model.AppUpdateType
 
 /**
- * Identifiers for the different types of developer triggered updates.
+ * Identifiers for different update priority.
+ *
+ * Created by Vipin KT on 19/05/20
  */
 enum class InAppUpdatePriority(val value: Int) {
     ONE(1),

@@ -20,7 +20,9 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.model.InstallStatus
 
 /**
- * A wrapper class for InstallState
+ * A wrapper class for [InstallState]
+ *
+ * Created by Vipin KT on 7/05/20
  */
 class InAppInstallState(private val installState: InstallState) {
 

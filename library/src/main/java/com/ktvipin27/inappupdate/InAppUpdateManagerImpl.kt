@@ -14,17 +14,18 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.ktvipin27.inappupdate.InAppUpdateManager.REQ_CODE_APP_UPDATE
+import java.lang.ref.WeakReference
 
 /**
  * A simple implementation of the Android In-App Update API.
  *
  */
-class InAppUpdateManagerImpl internal constructor(private val activity: AppCompatActivity) :
-    ContextWrapper(activity), LifecycleObserver {
+class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakReference<AppCompatActivity>) :
+    ContextWrapper(activityRef.get()), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
-    val inAppSnackbar: InAppSnackbar = InAppSnackbar(activity) { completeUpdate() }
+    private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
 
     private var _resumeUpdate = true
     private var _updateType = InAppUpdateType.FLEXIBLE
@@ -42,7 +43,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
             _resumeUpdate = value
         }
 
-    inline fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
+    fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
         block(inAppSnackbar)
         return this
     }
@@ -53,7 +54,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
     }
 
     init {
-        activity.lifecycle.addObserver(this)
+        activityRef.get()?.lifecycle?.addObserver(this)
         appUpdateManager.registerListener(stateUpdatedListener)
     }
 
@@ -88,7 +89,7 @@ class InAppUpdateManagerImpl internal constructor(private val activity: AppCompa
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             _updateType.value,
-            activity,
+            activityRef.get(),
             REQ_CODE_APP_UPDATE
         )
     }

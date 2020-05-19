@@ -16,17 +16,34 @@
 
 package com.ktvipin27.inappupdate
 
-import com.google.android.play.core.install.model.AppUpdateType
-
 /**
  * Identifiers for different update priority.
  *
  * Created by Vipin KT on 19/05/20
  */
 enum class InAppUpdatePriority(val value: Int) {
+    /**
+     * low priority
+     */
     ONE(1),
+
+    /**
+     * in b/w low and medium
+     */
     TWO(2),
+
+    /**
+     * medium priority
+     */
     THREE(3),
+
+    /**
+     * in b/w medium & high
+     */
     FOUR(4),
+
+    /**
+     * high priority
+     */
     FIVE(5),
 }

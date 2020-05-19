@@ -37,6 +37,9 @@ class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction
     private var _snackbarActionTextColor =
         ContextCompat.getColor(this, R.color.color_snackbar_action)
 
+    /**
+     * An instance of [Snackbar] with given options.
+     */
     private val snackbar: Snackbar? by lazy {
         val rootView =
             activityRef.get()?.window?.decorView?.findViewById<View>(android.R.id.content)
@@ -49,30 +52,46 @@ class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction
         }
     }
 
+    /**
+     * [Snackbar] message
+     */
     var text
         get() = _snackbarText
         set(value) {
             _snackbarText = value
         }
 
+    /**
+     * [Snackbar] message text color
+     */
     var textColor
         get() = _snackbarTextColor
         set(value) {
             _snackbarTextColor = value
         }
 
+    /**
+     * Text of [Snackbar] action
+     */
     var actionText
         get() = _snackbarAction
         set(value) {
             _snackbarAction = value
         }
 
+    /**
+     * Color [Snackbar] action
+     */
     var actionTextColor
         get() = _snackbarActionTextColor
         set(value) {
             _snackbarActionTextColor = value
         }
 
+    /**
+     * Display the [Snackbar]
+     *
+     */
     internal fun show() {
         snackbar?.show()
     }

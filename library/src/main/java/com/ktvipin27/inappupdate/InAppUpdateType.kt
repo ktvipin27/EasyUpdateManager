@@ -24,6 +24,13 @@ import com.google.android.play.core.install.model.AppUpdateType
  * Created by Vipin KT on 07/05/20
  */
 enum class InAppUpdateType(val value: Int) {
+    /**
+     * background download and installation
+     */
     FLEXIBLE(AppUpdateType.FLEXIBLE),
+
+    /**
+     * update is critical for continued use of the app
+     */
     IMMEDIATE(AppUpdateType.IMMEDIATE)
 }

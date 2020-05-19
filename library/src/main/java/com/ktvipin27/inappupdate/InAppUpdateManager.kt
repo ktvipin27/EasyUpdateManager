@@ -27,7 +27,16 @@ import java.lang.ref.WeakReference
  */
 object InAppUpdateManager {
 
+    /**
+     * Request code for UpdateFlow.
+     */
     internal const val REQ_CODE_APP_UPDATE = 54321
 
+    /**
+     * Creates an instance of [InAppUpdateManagerImpl].
+     *
+     * @param activity Reference of the activity from where the [InAppUpdateManager] is called.
+     * @return An instance of [InAppUpdateManagerImpl].
+     */
     fun with(activity: AppCompatActivity) = InAppUpdateManagerImpl(WeakReference(activity))
 }

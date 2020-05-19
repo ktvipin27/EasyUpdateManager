@@ -47,30 +47,63 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private var listener: ((state: InAppInstallState) -> Unit) = {}
     private val options = InAppUpdateOptions()
 
+    /**
+     * Use this lambda function to customize [InAppUpdateManagerImpl]
+     *
+     * @param block [InAppUpdateOptions]
+     * @return [InAppUpdateManagerImpl]
+     */
     fun options(block: InAppUpdateOptions.() -> Unit): InAppUpdateManagerImpl {
         block(options)
         return this
     }
 
+    /**
+     * Use this lambda function to customize [InAppSnackbar]
+     *
+     * @param block [InAppSnackbar]
+     * @return [InAppUpdateManagerImpl]
+     */
     fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
         block(inAppSnackbar)
         return this
     }
 
+    /**
+     * Install updates will be delivered through this function.
+     *
+     * @param block [InAppInstallState]
+     * @return [InAppUpdateManagerImpl]
+     */
     fun listener(block: (state: InAppInstallState) -> Unit): InAppUpdateManagerImpl {
         listener = block
         return this
     }
 
+    /**
+     * Call this method to start the update process.
+     */
     fun startUpdate() = getAppUpdateInfo()
 
+    /**
+     * Call this method to complete the update process.
+     * If you are using custom notification, then on user action, call this method to finish the update
+     */
     fun completeUpdate() = appUpdateManager.completeUpdate()
 
+    /**
+     * Called at the time of initialization.
+     * Registering [stateUpdatedListener] here
+     */
     init {
         activityRef.get()?.lifecycle?.addObserver(this)
         appUpdateManager.registerListener(stateUpdatedListener)
     }
 
+    /**
+     * Called when activity lifecycle changed to onResume.
+     * Resumes the update based on configured [options]
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         when {
@@ -87,11 +120,19 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         }
     }
 
+    /**
+     * Called when activity lifecycle changed to onDestroy.
+     * Unregistering [stateUpdatedListener] here.
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun onDestroy() {
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
+    /**
+     * Checks for update based on configured [options].
+     * calls [requestUpdate] if update available.
+     */
     private fun getAppUpdateInfo() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
@@ -108,6 +149,11 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         }
     }
 
+    /**
+     * starts update.
+     *
+     * @param appUpdateInfo AppUpdateInfo
+     */
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
@@ -117,6 +163,12 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         )
     }
 
+    /**
+     * Called when there is a change in [InstallState].
+     * Triggers [listener] with [state].
+     *
+     * @param state InstallState
+     */
     private fun onStateUpdate(state: InstallState) {
         listener.invoke(InAppInstallState(state))
 

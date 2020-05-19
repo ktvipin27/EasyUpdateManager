@@ -35,6 +35,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
 
     var resumeUpdate = true
     var updateType = InAppUpdateType.FLEXIBLE
+    var updatePriority = InAppUpdatePriority.ONE
 
     var forceUpdateCancellable = false
         set(value) {
@@ -86,8 +87,9 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun getAppUpdateInfo() {
         // Checks that the platform will allow the specified type of update.
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
-            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                it.isUpdateTypeAllowed(updateType.value)
+            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && it.isUpdateTypeAllowed(updateType.value)
+                && it.updatePriority() >= updatePriority.value
             ) {
                 // Start an update.
                 requestUpdate(it)

@@ -32,12 +32,13 @@ class MainActivity : AppCompatActivity() {
             .with(this)
             .apply {
                 updateType = InAppUpdateType.IMMEDIATE
+                forceUpdateCancellable = true
             }
             .listener {
 
             }
             .snackbar {
-                actionText = "OK"
+                enabled = false
             }
             .startUpdate()
     }

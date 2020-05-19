@@ -30,6 +30,10 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private var _resumeUpdate = true
     private var _updateType = InAppUpdateType.FLEXIBLE
     private var listener: ((state: InAppInstallState) -> Unit) = {}
+    private val immediateUpdateResumeStates = mutableSetOf(
+        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
+        UpdateAvailability.UPDATE_AVAILABLE
+    )
 
     var updateType
         get() = _updateType
@@ -41,6 +45,15 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         get() = _resumeUpdate
         set(value) {
             _resumeUpdate = value
+        }
+
+    var forceUpdateCancellable = false
+        set(value) {
+            field = value
+            if (value)
+                immediateUpdateResumeStates.remove(UpdateAvailability.UPDATE_AVAILABLE)
+            else
+                immediateUpdateResumeStates.add(UpdateAvailability.UPDATE_AVAILABLE)
         }
 
     fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
@@ -60,8 +73,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        if (_resumeUpdate)
-            resumeUpdate()
+        resumeUpdate()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -95,17 +107,15 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     }
 
     private fun resumeUpdate() {
-        appUpdateManager.appUpdateInfo.addOnSuccessListener {
-            when {
-                _updateType.value == AppUpdateType.IMMEDIATE && it.updateAvailability() in listOf(
-                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
-                    UpdateAvailability.UPDATE_AVAILABLE
-                ) -> requestUpdate(it)
-
-                _updateType.value == AppUpdateType.FLEXIBLE &&
-                        it.installStatus() == InstallStatus.DOWNLOADED ->
-                    inAppSnackbar.show()
-            }
+        when {
+            _updateType.value == AppUpdateType.FLEXIBLE && resumeUpdate ->
+                appUpdateManager.appUpdateInfo.addOnSuccessListener {
+                    if (it.installStatus() == InstallStatus.DOWNLOADED) inAppSnackbar.show()
+                }
+            _updateType.value == AppUpdateType.IMMEDIATE && (resumeUpdate || !forceUpdateCancellable) ->
+                appUpdateManager.appUpdateInfo.addOnSuccessListener {
+                    if (it.updateAvailability() in immediateUpdateResumeStates) requestUpdate(it)
+                }
         }
     }
 

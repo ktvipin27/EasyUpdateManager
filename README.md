@@ -17,12 +17,12 @@ There are two update modes.
 ### 1. Flexible: 
     A user experience that provides background download and installation with graceful state monitoring. This UX is appropriate when it’s acceptable for the user to use the app while downloading the update. For example, you want to urge users to try a new feature that’s not critical to the core functionality of your app.
   
-<img src="https://developer.android.com/images/app-bundle/flexible_flow.png" alt="" width="825"></p>
+<img src="https://developer.android.com/images/app-bundle/flexible_flow.png" alt="" width="525"></p>
 
 ### 2. Immediate: 
     A full screen user experience that requires the user to update and restart the app in order to continue using the app. This UX is best for cases where an update is critical for continued use of the app. After a user accepts an immediate update, Google Play handles the update installation and app restart.
     
- <img src="https://developer.android.com/images/app-bundle/immediate_flow.png" alt="" width="528"></p>
+ <img src="https://developer.android.com/images/app-bundle/immediate_flow.png" alt="" width="350"></p>
 
 ## Usage
 
@@ -33,7 +33,9 @@ InAppUpdateManager
     .startUpdate()
 ```
 
-## Options
+## Customisation
+
+### Options
 
 InAppUpdateManager provides a set of options for customisation.
 
@@ -51,6 +53,7 @@ InAppUpdateManager
 ```
 
 
+
 | Option                  | Description                                                                                                                                                                                 | Values                                                                                                                             | Default Value            |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
 | `updateType`            | Type of update                                                                                                                                                                              | InAppUpdateType.FLEXIBLE, InAppUpdateType.IMMEDIATE                                                                                | InAppUpdateType.FLEXIBLE |
@@ -59,7 +62,8 @@ InAppUpdateManager
 | `daysForFlexibleUpdate` | To check for the number of days that have passed since the Google Play Store learns of an update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-staleness)) | Any Integer                                                                                                                        | 0                        |
 | `customNotification`    | To show some custom alert instead of the snackbar                                                                                                                                           | true, false                                                                                                                         | false                    |
 
-* **Snackbar**
+
+### Snackbar
 
 Once the flexible update is downloaded, InAppUpdateManager will show a snackbar to get user confirmation to install the update.
 You can customise the snackbar with `snackbar` lambda.
@@ -75,7 +79,7 @@ InAppUpdateManager
     .startUpdate()
 ```
 
-* **Listener**
+### Listener
 
 InAppUpdateManager provides an option to set listener for install state changes.
 ```kotlin
@@ -96,9 +100,9 @@ InAppUpdateManager
     .startUpdate()
 ```
 
-* **Custom Install Alert**
+### Custom Install Alert
 
-Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell InAppUpdateManager to don`t show the snackbar by setting `customNotification = false` and how your custom alert by listening to install state.
+Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell the InAppUpdateManager to not show the snackbar by setting `customNotification = false` and how your custom alert by listening to install state.
 ```kotlin
 val inAppUpdateManager = InAppUpdateManager.with(this)
 inAppUpdateManager
@@ -111,9 +115,24 @@ inAppUpdateManager
     }
 inAppUpdateManager.startUpdate()
 ```
-On user confirmation, please call
+On user confirmation, call
 ```kotlin
 inAppUpdateManager.completeUpdate()
+```
+
+### Progress
+
+You can show downloading progress by listening to install state.
+```kotlin
+InAppUpdateManager
+    .with(this)
+    .listener { state ->
+        when {
+            state.isDownloading -> showProgress(state.totalBytesToDownload, state.totalBytesToDownload)
+            state.isDownloaded -> hideProgress()
+        }
+    }
+    .startUpdate()
 ```
 
 ## Test with internal app-sharing

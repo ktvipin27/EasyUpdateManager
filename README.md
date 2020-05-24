@@ -1,6 +1,10 @@
 # EasyUpdateManager
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/zerobranch/android-remote-debugger/blob/master/LICENSE)
+
 A wrapper for Android [In-App-Update Library](https://developer.android.com/guide/playcore/in-app-updates)
 
+
+Built with ❤︎ by [Vipin KT](https://twitter.com/ktvipin27)
 
 # Getting Started
 
@@ -13,104 +17,122 @@ There are two update modes.
 ### 1. Flexible: 
     A user experience that provides background download and installation with graceful state monitoring. This UX is appropriate when it’s acceptable for the user to use the app while downloading the update. For example, you want to urge users to try a new feature that’s not critical to the core functionality of your app.
   
-<img src="https://developer.android.com/images/app-bundle/flexible_flow.png" alt="" width="825"></p>
+<img src="https://developer.android.com/images/app-bundle/flexible_flow.png" alt="" width="525"></p>
 
 ### 2. Immediate: 
     A full screen user experience that requires the user to update and restart the app in order to continue using the app. This UX is best for cases where an update is critical for continued use of the app. After a user accepts an immediate update, Google Play handles the update installation and app restart.
     
- <img src="https://developer.android.com/images/app-bundle/immediate_flow.png" alt="" width="528"></p>
+ <img src="https://developer.android.com/images/app-bundle/immediate_flow.png" alt="" width="350"></p>
 
 ## Usage
 
-A simple implemenatation of the EasyUpdateManager is
+A simple implementation of the EasyUpdateManager is
 ```kotlin
 EasyUpdateManager
     .with(this)
     .startUpdate()
 ```
-EasyUpdateManager provides a set of customisation options too. You can apply them by using kotlin `apply` function.
 
-* **Update Type**
+## Customisation
 
-By default, update type is set to `EasyUpdateType.FLEXIBLE`.
-You can implement force update by setting update type to `EasyUpdateType.IMMEDIATE`
+### Options
+
+EasyUpdateManager provides a set of options for customisation.
+
 ```kotlin
 EasyUpdateManager
     .with(this)
-    .apply {
-        updateType = EasyUpdateType.IMMEDIATE
+    .options {
+        resumeUpdate = true
+        updateType = InAppUpdateType.IMMEDIATE
+        updatePriority = InAppUpdatePriority.FIVE
+        daysForFlexibleUpdate = 2
+        customNotification = false
     }
     .startUpdate()
 ```
-* **Resume Update**
 
-We can define wether to resume updates or not if the user leaves the screen and come back after some time.
-By deafult this is set to true
-```kotlin
-EasyUpdateManager
-    .with(this)
-    .apply {
-        shouldResumeUpdate = false
-    }
-    .startUpdate()
-```
-* **Snackbar**
+
+
+| Option                  | Description                                                                                                                                                                                 | Values                                                                                                                             | Default Value            |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| `updateType`            | Type of update                                                                                                                                                                              | InAppUpdateType.FLEXIBLE, InAppUpdateType.IMMEDIATE                                                                                | InAppUpdateType.FLEXIBLE |
+| `resumeUpdate`          | Wether to resume updates or not if the user leaves the screen and come back after some time.                                                                                                | true, false                                                                                                                        | true                     |
+| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | InAppUpdatePriority.ONE, InAppUpdatePriority.TWO,  InAppUpdatePriority.THREE,  InAppUpdatePriority.FOUR,  InAppUpdatePriority.FIVE | InAppUpdatePriority.ONE  |
+| `daysForFlexibleUpdate` | To check for the number of days that have passed since the Google Play Store learns of an update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-staleness)) | Any Integer                                                                                                                        | 0                        |
+| `customNotification`    | To show some custom alert instead of the snackbar                                                                                                                                           | true, false                                                                                                                        | false                    |
+
+
+### Snackbar
 
 Once the flexible update is downloaded, EasyUpdateManager will show a snackbar to get user confirmation to install the update.
-You can customise the snackbar like below
+You can customise the snackbar with `snackbar` lambda.
 ```kotlin
 EasyUpdateManager
     .with(this)
-    .apply {
-        snackbarText = getString(R.string.update_confirmation_message)
-        snackbarTextColor = ContextCompat.getColor(this,R.color.snackbar_text_color)
-        snackbarAction = getString(R.string.update_confirmation_action)
-        snackbarActionTextColor = ContextCompat.getColor(this,R.color.snackbar_action_color)
+    .snackbar {
+        text = getString(R.string.update_confirmation_message)
+        textColor = ContextCompat.getColor(this,R.color.snackbar_text_color)
+        action = getString(R.string.update_confirmation_action)
+        actionTextColor = ContextCompat.getColor(this,R.color.snackbar_action_color)
     }
     .startUpdate()
 ```
 
-* **Listener**
+### Listener
 
 EasyUpdateManager provides an option to set listener for install state changes.
 ```kotlin
 EasyUpdateManager
     .with(this)
-    .apply {
-        listener = { state ->
-            when {
-                state.isCanceled -> Log.d(TAG, "Canceled")
-                state.isDownloaded -> Log.d(TAG, "Downloaded ${state.bytesDownloaded}")
-                state.isDownloading -> Log.d(TAG, "Downloading ${state.totalBytesToDownload}")
-                state.isFailed -> Log.d(TAG, "Failed ${state.installErrorCode}")
-                state.isInstalled -> Log.d(TAG, "Installed")
-                state.isInstalling -> Log.d(TAG, "Installing ${state.bytesDownloaded}")
-                state.isPending -> Log.d(TAG, "Pending ${state.totalBytesToDownload}")
-                state.isUnknown -> Log.d(TAG, "Unknown")
-            }
+    .listener { state ->
+        when {
+            state.isCanceled -> Log.d(TAG, "Canceled")
+            state.isDownloaded -> Log.d(TAG, "Downloaded ${state.bytesDownloaded}")
+            state.isDownloading -> Log.d(TAG, "Downloading ${state.totalBytesToDownload}")
+            state.isFailed -> Log.d(TAG, "Failed ${state.installErrorCode}")
+            state.isInstalled -> Log.d(TAG, "Installed")
+            state.isInstalling -> Log.d(TAG, "Installing ${state.bytesDownloaded}")
+            state.isPending -> Log.d(TAG, "Pending ${state.totalBytesToDownload}")
+            state.isUnknown -> Log.d(TAG, "Unknown")
         }
     }
     .startUpdate()
 ```
 
-* **Custom Install Alert**
+### Custom Install Alert
 
-Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell EasyUpdateManager to don`t show the snackbar and you can show your custom alert by listening to install state.
+Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell the EasyUpdateManager to not show the snackbar by setting `customNotification = false` and how your custom alert by listening to install state.
 ```kotlin
-val EasyUpdateManager = EasyUpdateManager.with(this)
-EasyUpdateManager
-    .apply {
-        shouldShowSnackbar = false
-        listener = { state ->
-            if (state.isDownloaded)
-                showInstallAlert()
-            }
-        }
-EasyUpdateManager.startUpdate()
+val easyUpdateManager = EasyUpdateManager.with(this)
+easyUpdateManager
+    .options {
+        customNotification = false
+    }
+    .listener { state ->
+        if (state.isDownloaded)
+            showInstallAlert()
+    }
+easyUpdateManager.startUpdate()
 ```
-On user confirmation, please call
+On user confirmation, call
 ```kotlin
-EasyUpdateManager.completeUpdate()
+easyUpdateManager.completeUpdate()
+```
+
+### Progress
+
+You can show downloading progress by listening to install state.
+```kotlin
+EasyUpdateManager
+    .with(this)
+    .listener { state ->
+        when {
+            state.isDownloading -> showProgress(state.totalBytesToDownload, state.totalBytesToDownload)
+            state.isDownloaded -> hideProgress()
+        }
+    }
+    .startUpdate()
 ```
 
 ## Test with internal app-sharing

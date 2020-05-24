@@ -44,8 +44,8 @@ EasyUpdateManager
     .with(this)
     .options {
         resumeUpdate = true
-        updateType = InAppUpdateType.IMMEDIATE
-        updatePriority = InAppUpdatePriority.FIVE
+        updateType = UpdateType.IMMEDIATE
+        updatePriority = UpdatePriority.FIVE
         daysForFlexibleUpdate = 2
         customNotification = false
     }
@@ -56,9 +56,9 @@ EasyUpdateManager
 
 | Option                  | Description                                                                                                                                                                                 | Values                                                                                                                             | Default Value            |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
-| `updateType`            | Type of update                                                                                                                                                                              | InAppUpdateType.FLEXIBLE, InAppUpdateType.IMMEDIATE                                                                                | InAppUpdateType.FLEXIBLE |
-| `resumeUpdate`          | Wether to resume updates or not if the user leaves the screen and come back after some time.                                                                                                | true, false                                                                                                                        | true                     |
-| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | InAppUpdatePriority.ONE, InAppUpdatePriority.TWO,  InAppUpdatePriority.THREE,  InAppUpdatePriority.FOUR,  InAppUpdatePriority.FIVE | InAppUpdatePriority.ONE  |
+| `updateType`            | Type of update                                                                                                                                                                              | UpdateType.FLEXIBLE, UpdateType.IMMEDIATE                                                                                | UpdateType.FLEXIBLE |
+| `resumeUpdate`          | Whether to resume updates or not if the user leaves the screen and come back after some time.                                                                                                | true, false                                                                                                                        | true                     |
+| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | UpdatePriority.ONE, UpdatePriority.TWO,  UpdatePriority.THREE,  UpdatePriority.FOUR,  UpdatePriority.FIVE | UpdatePriority.ONE  |
 | `daysForFlexibleUpdate` | To check for the number of days that have passed since the Google Play Store learns of an update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-staleness)) | Any Integer                                                                                                                        | 0                        |
 | `customNotification`    | To show some custom alert instead of the snackbar                                                                                                                                           | true, false                                                                                                                        | false                    |
 

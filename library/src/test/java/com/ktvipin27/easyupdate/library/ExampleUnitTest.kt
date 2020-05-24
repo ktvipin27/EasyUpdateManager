@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate.library
+package com.ktvipin27.easyupdate.library
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

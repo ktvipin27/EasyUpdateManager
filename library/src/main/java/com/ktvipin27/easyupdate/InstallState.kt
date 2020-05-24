@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
 
 import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.model.InstallStatus
@@ -24,7 +24,7 @@ import com.google.android.play.core.install.model.InstallStatus
  *
  * Created by Vipin KT on 7/05/20
  */
-class InAppInstallState(private val installState: InstallState) {
+class InstallState(private val installState: InstallState) {
 
     val installStatus: Int
         get() = installState.installStatus()

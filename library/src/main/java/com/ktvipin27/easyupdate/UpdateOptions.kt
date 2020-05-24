@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
 
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
- * A set of customization options for [InAppUpdateManager]
+ * A set of customization options for [EasyUpdateManager]
  *
  * Created by Vipin KT on 19/05/20
  */
-data class InAppUpdateOptions(
+data class UpdateOptions(
     /**
      * Whether to resume update or not.
      */
     var resumeUpdate: Boolean = true,
     /**
-     * Type of update. [InAppUpdateType].
+     * Type of update. [UpdateType].
      */
-    var updateType: InAppUpdateType = InAppUpdateType.FLEXIBLE,
+    var updateType: UpdateType = UpdateType.FLEXIBLE,
     /**
-     * Update priority , integer value between 0 and 5, must be one of the  [InAppUpdatePriority]
+     * Update priority , integer value between 0 and 5, must be one of the  [UpdatePriority]
      */
-    var updatePriority: InAppUpdatePriority = InAppUpdatePriority.ONE,
+    var updatePriority: UpdatePriority = UpdatePriority.ONE,
     /**
      * Days to wait before notifying the user with a flexible update.
      */
     var daysForFlexibleUpdate: Int = 0,
     /**
      * Pass true, if you want to show custom notification.
-     * [InAppSnackbar] will not show if set to true.
+     * [UpdateSnackbar] will not show if set to true.
      */
     var customNotification: Boolean = false
 ) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
 
 import androidx.appcompat.app.AppCompatActivity
 import java.lang.ref.WeakReference
@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference
  *
  * Created by Vipin KT on 29/04/20
  */
-object InAppUpdateManager {
+object EasyUpdateManager {
 
     /**
      * Request code for UpdateFlow.
@@ -33,10 +33,10 @@ object InAppUpdateManager {
     internal const val REQ_CODE_APP_UPDATE = 54321
 
     /**
-     * Creates an instance of [InAppUpdateManagerImpl].
+     * Creates an instance of [UpdateManager].
      *
-     * @param activity Reference of the activity from where the [InAppUpdateManager] is called.
-     * @return An instance of [InAppUpdateManagerImpl].
+     * @param activity Reference of the activity from where the [EasyUpdateManager] is called.
+     * @return An instance of [UpdateManager].
      */
-    fun with(activity: AppCompatActivity) = InAppUpdateManagerImpl(WeakReference(activity))
+    fun with(activity: AppCompatActivity) = UpdateManager(WeakReference(activity))
 }

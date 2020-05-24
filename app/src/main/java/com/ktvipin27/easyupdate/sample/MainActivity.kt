@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate.sample
+package com.ktvipin27.easyupdate.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.ktvipin27.inappupdate.InAppUpdateManager
-import com.ktvipin27.inappupdate.InAppUpdateType
+import com.ktvipin27.easyupdate.EasyUpdateManager
+import com.ktvipin27.easyupdate.UpdateType
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -38,16 +38,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startFlexibleUpdate() {
-        InAppUpdateManager
+        EasyUpdateManager
             .with(this)
             .startUpdate()
     }
 
     private fun startImmediateUpdate() {
-        InAppUpdateManager
+        EasyUpdateManager
             .with(this)
             .options {
-                updateType = InAppUpdateType.IMMEDIATE
+                updateType = UpdateType.IMMEDIATE
+            }
+            .snackbar {
+
+            }
+            .listener {
+
             }
             .startUpdate()
     }

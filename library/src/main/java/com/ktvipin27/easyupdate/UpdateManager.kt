@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
 
 import android.content.ContextWrapper
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +28,7 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.ktvipin27.inappupdate.InAppUpdateManager.REQ_CODE_APP_UPDATE
+import com.ktvipin27.easyupdate.EasyUpdateManager.REQ_CODE_APP_UPDATE
 import java.lang.ref.WeakReference
 
 /**
@@ -37,45 +37,45 @@ import java.lang.ref.WeakReference
  *
  * Created by Vipin KT on 08/05/20
  */
-class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakReference<AppCompatActivity>) :
+class UpdateManager internal constructor(private val activityRef: WeakReference<AppCompatActivity>) :
     ContextWrapper(activityRef.get()), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private val inAppSnackbar: InAppSnackbar = InAppSnackbar(activityRef) { completeUpdate() }
-    private var listener: ((state: InAppInstallState) -> Unit) = {}
-    private val options = InAppUpdateOptions()
+    private val updateSnackbar: UpdateSnackbar = UpdateSnackbar(activityRef) { completeUpdate() }
+    private var listener: ((state: com.ktvipin27.easyupdate.InstallState) -> Unit) = {}
+    private val options = UpdateOptions()
 
     /**
-     * Use this lambda function to customize [InAppUpdateManagerImpl]
+     * Use this lambda function to customize [UpdateManager]
      *
-     * @param block [InAppUpdateOptions]
-     * @return [InAppUpdateManagerImpl]
+     * @param block [UpdateOptions]
+     * @return [UpdateManager]
      */
-    fun options(block: InAppUpdateOptions.() -> Unit): InAppUpdateManagerImpl {
+    fun options(block: UpdateOptions.() -> Unit): UpdateManager {
         block(options)
         return this
     }
 
     /**
-     * Use this lambda function to customize [InAppSnackbar]
+     * Use this lambda function to customize [UpdateSnackbar]
      *
-     * @param block [InAppSnackbar]
-     * @return [InAppUpdateManagerImpl]
+     * @param block [UpdateSnackbar]
+     * @return [UpdateManager]
      */
-    fun snackbar(block: InAppSnackbar.() -> Unit): InAppUpdateManagerImpl {
-        block(inAppSnackbar)
+    fun snackbar(block: UpdateSnackbar.() -> Unit): UpdateManager {
+        block(updateSnackbar)
         return this
     }
 
     /**
      * Install updates will be delivered through this function.
      *
-     * @param block [InAppInstallState]
-     * @return [InAppUpdateManagerImpl]
+     * @param block [InstallState]
+     * @return [UpdateManager]
      */
-    fun listener(block: (state: InAppInstallState) -> Unit): InAppUpdateManagerImpl {
+    fun listener(block: (state: com.ktvipin27.easyupdate.InstallState) -> Unit): UpdateManager {
         listener = block
         return this
     }
@@ -109,7 +109,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
         when {
             options.isFlexibleUpdate && options.resumeUpdate ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.installStatus() == InstallStatus.DOWNLOADED && !options.customNotification) inAppSnackbar.show()
+                    if (it.installStatus() == InstallStatus.DOWNLOADED && !options.customNotification) updateSnackbar.show()
                 }
             options.isImmediateUpdate && (options.resumeUpdate || !options.forceUpdateCancellable) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
@@ -136,7 +136,7 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
     private fun getAppUpdateInfo() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
-                if (options.updateType == InAppUpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
+                if (options.updateType == UpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
                         && it.clientVersionStalenessDays() >= options.daysForFlexibleUpdate else true
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && it.isUpdateTypeAllowed(options.updateType.value)
@@ -170,10 +170,10 @@ class InAppUpdateManagerImpl internal constructor(private val activityRef: WeakR
      * @param state InstallState
      */
     private fun onStateUpdate(state: InstallState) {
-        listener.invoke(InAppInstallState(state))
+        listener.invoke(InstallState(state))
 
         if (options.isFlexibleUpdate && state.installStatus() == InstallStatus.DOWNLOADED
             && !options.customNotification
-        ) inAppSnackbar.show()
+        ) updateSnackbar.show()
     }
 }

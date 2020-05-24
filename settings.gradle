@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-rootProject.name='InAppUpdateManager'
+rootProject.name='EasyUpdateManager'
 include ':app'
 include ':library'

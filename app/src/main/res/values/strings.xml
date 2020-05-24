@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <string name="app_name">InAppUpdateManager</string>
+    <string name="app_name">EasyUpdateManager</string>
     <string name="label_message">Click on the buttons to check update.</string>
     <string name="action_flexible">Flexible</string>
     <string name="action_immediate">Immediate</string>

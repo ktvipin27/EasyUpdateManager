@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate.sample
+package com.ktvipin27.easyupdate.library
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -33,6 +33,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.ktvipin27.inappupdate.sample", appContext.packageName)
+        assertEquals("com.ktvipin27.easyupdate.library.test", appContext.packageName)
     }
 }

@@ -1,4 +1,4 @@
-# InAppUpdateManager
+# EasyUpdateManager
 A wrapper for Android [In-App-Update Library](https://developer.android.com/guide/playcore/in-app-updates)
 
 
@@ -22,23 +22,23 @@ There are two update modes.
 
 ## Usage
 
-A simple implemenatation of the InAppUpdateManager is
+A simple implemenatation of the EasyUpdateManager is
 ```kotlin
-InAppUpdateManager
+EasyUpdateManager
     .with(this)
     .startUpdate()
 ```
-InAppUpdateManager provides a set of customisation options too. You can apply them by using kotlin `apply` function.
+EasyUpdateManager provides a set of customisation options too. You can apply them by using kotlin `apply` function.
 
 * **Update Type**
 
-By default, update type is set to `InAppUpdateType.FLEXIBLE`.
-You can implement force update by setting update type to `InAppUpdateType.IMMEDIATE`
+By default, update type is set to `EasyUpdateType.FLEXIBLE`.
+You can implement force update by setting update type to `EasyUpdateType.IMMEDIATE`
 ```kotlin
-InAppUpdateManager
+EasyUpdateManager
     .with(this)
     .apply {
-        updateType = InAppUpdateType.IMMEDIATE
+        updateType = EasyUpdateType.IMMEDIATE
     }
     .startUpdate()
 ```
@@ -47,7 +47,7 @@ InAppUpdateManager
 We can define wether to resume updates or not if the user leaves the screen and come back after some time.
 By deafult this is set to true
 ```kotlin
-InAppUpdateManager
+EasyUpdateManager
     .with(this)
     .apply {
         shouldResumeUpdate = false
@@ -56,10 +56,10 @@ InAppUpdateManager
 ```
 * **Snackbar**
 
-Once the flexible update is downloaded, InAppUpdateManager will show a snackbar to get user confirmation to install the update.
+Once the flexible update is downloaded, EasyUpdateManager will show a snackbar to get user confirmation to install the update.
 You can customise the snackbar like below
 ```kotlin
-InAppUpdateManager
+EasyUpdateManager
     .with(this)
     .apply {
         snackbarText = getString(R.string.update_confirmation_message)
@@ -72,9 +72,9 @@ InAppUpdateManager
 
 * **Listener**
 
-InAppUpdateManager provides an option to set listener for install state changes.
+EasyUpdateManager provides an option to set listener for install state changes.
 ```kotlin
-InAppUpdateManager
+EasyUpdateManager
     .with(this)
     .apply {
         listener = { state ->
@@ -95,10 +95,10 @@ InAppUpdateManager
 
 * **Custom Install Alert**
 
-Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell InAppUpdateManager to don`t show the snackbar and you can show your custom alert by listening to install state.
+Sometimes you may want to show some custom alert instead of the snackbar. In this scenario you can tell EasyUpdateManager to don`t show the snackbar and you can show your custom alert by listening to install state.
 ```kotlin
-val inAppUpdateManager = InAppUpdateManager.with(this)
-inAppUpdateManager
+val EasyUpdateManager = EasyUpdateManager.with(this)
+EasyUpdateManager
     .apply {
         shouldShowSnackbar = false
         listener = { state ->
@@ -106,11 +106,11 @@ inAppUpdateManager
                 showInstallAlert()
             }
         }
-inAppUpdateManager.startUpdate()
+EasyUpdateManager.startUpdate()
 ```
 On user confirmation, please call
 ```kotlin
-inAppUpdateManager.completeUpdate()
+EasyUpdateManager.completeUpdate()
 ```
 
 ## Test with internal app-sharing

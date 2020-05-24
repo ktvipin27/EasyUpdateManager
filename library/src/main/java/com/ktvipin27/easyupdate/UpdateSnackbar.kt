@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
 
 import android.content.ContextWrapper
 import android.view.View
@@ -28,7 +28,7 @@ import java.lang.ref.WeakReference
  *
  * Created by Vipin KT on 18/05/20
  */
-class InAppSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction: () -> Unit) :
+class UpdateSnackbar(activityRef: WeakReference<AppCompatActivity>, onClickAction: () -> Unit) :
     ContextWrapper(activityRef.get()) {
 
     private var _snackbarText = getString(R.string.message_update_downloaded)

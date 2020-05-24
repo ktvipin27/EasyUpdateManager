@@ -14,36 +14,23 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.inappupdate
+package com.ktvipin27.easyupdate
+
+import com.google.android.play.core.install.model.AppUpdateType
 
 /**
- * Identifiers for different update priority.
+ * Identifiers for the different types of developer triggered updates.
  *
- * Created by Vipin KT on 19/05/20
+ * Created by Vipin KT on 07/05/20
  */
-enum class InAppUpdatePriority(val value: Int) {
+enum class UpdateType(val value: Int) {
     /**
-     * low priority
+     * background download and installation
      */
-    ONE(1),
+    FLEXIBLE(AppUpdateType.FLEXIBLE),
 
     /**
-     * in b/w low and medium
+     * update is critical for continued use of the app
      */
-    TWO(2),
-
-    /**
-     * medium priority
-     */
-    THREE(3),
-
-    /**
-     * in b/w medium & high
-     */
-    FOUR(4),
-
-    /**
-     * high priority
-     */
-    FIVE(5),
+    IMMEDIATE(AppUpdateType.IMMEDIATE)
 }

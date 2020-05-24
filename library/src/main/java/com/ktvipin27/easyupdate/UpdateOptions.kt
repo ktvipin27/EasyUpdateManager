@@ -43,7 +43,7 @@ data class UpdateOptions(
     var daysForFlexibleUpdate: Int = 0,
     /**
      * Pass true, if you want to show custom notification.
-     * [UpdateSnackbar] will not show if set to true.
+     * [SnackbarOptions] will not show if set to true.
      */
     var customNotification: Boolean = false
 ) {

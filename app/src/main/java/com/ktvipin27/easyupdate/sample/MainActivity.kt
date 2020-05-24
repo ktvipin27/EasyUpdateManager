@@ -19,6 +19,8 @@ package com.ktvipin27.easyupdate.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin27.easyupdate.EasyUpdateManager
+import com.ktvipin27.easyupdate.InstallState
+import com.ktvipin27.easyupdate.UpdateListener
 import com.ktvipin27.easyupdate.UpdateType
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -55,6 +57,11 @@ class MainActivity : AppCompatActivity() {
             .listener {
 
             }
+            .setListener(object : UpdateListener {
+                override fun onStateUpdate(state: InstallState) {
+
+                }
+            })
             .startUpdate()
     }
 }

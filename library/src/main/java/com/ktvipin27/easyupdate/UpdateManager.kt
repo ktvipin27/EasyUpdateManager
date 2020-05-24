@@ -17,10 +17,12 @@
 package com.ktvipin27.easyupdate
 
 import android.content.ContextWrapper
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -43,9 +45,25 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private val updateSnackbar: UpdateSnackbar = UpdateSnackbar(activityRef) { completeUpdate() }
     private var listener: ((state: com.ktvipin27.easyupdate.InstallState) -> Unit) = {}
-    private val options = UpdateOptions()
+    private var listenerJava: UpdateListener? = null
+    private var updateOptions = UpdateOptions()
+    private var snackbarOptions = SnackbarOptions()
+
+    /**
+     * An instance of [Snackbar] with given options.
+     */
+    private val snackbar: Snackbar? by lazy {
+        val rootView =
+            activityRef.get()?.window?.decorView?.findViewById<View>(android.R.id.content)
+        rootView?.let {
+            Snackbar
+                .make(it, snackbarOptions.text, Snackbar.LENGTH_INDEFINITE)
+                .setAction(snackbarOptions.actionText) { completeUpdate() }
+                .setActionTextColor(snackbarOptions.actionTextColor)
+                .setTextColor(snackbarOptions.textColor)
+        }
+    }
 
     /**
      * Use this lambda function to customize [UpdateManager]
@@ -54,18 +72,40 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * @return [UpdateManager]
      */
     fun options(block: UpdateOptions.() -> Unit): UpdateManager {
-        block(options)
+        block(updateOptions)
         return this
     }
 
     /**
-     * Use this lambda function to customize [UpdateSnackbar]
+     * Use this function to customize [UpdateManager]
      *
-     * @param block [UpdateSnackbar]
+     * @param options [UpdateOptions]
      * @return [UpdateManager]
      */
-    fun snackbar(block: UpdateSnackbar.() -> Unit): UpdateManager {
-        block(updateSnackbar)
+    fun setOptions(options: UpdateOptions): UpdateManager {
+        updateOptions = options
+        return this
+    }
+
+    /**
+     * Use this lambda function to customize [SnackbarOptions]
+     *
+     * @param block [SnackbarOptions]
+     * @return [UpdateManager]
+     */
+    fun snackbar(block: SnackbarOptions.() -> Unit): UpdateManager {
+        block(snackbarOptions)
+        return this
+    }
+
+    /**
+     * Use this function to customize [Snackbar]
+     *
+     * @param options [SnackbarOptions]
+     * @return [UpdateManager]
+     */
+    fun setSnackbar(options: SnackbarOptions): UpdateManager {
+        snackbarOptions = options
         return this
     }
 
@@ -77,6 +117,17 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      */
     fun listener(block: (state: com.ktvipin27.easyupdate.InstallState) -> Unit): UpdateManager {
         listener = block
+        return this
+    }
+
+    /**
+     * Install updates will be delivered through this function.
+     *
+     * @param listener [InstallState]
+     * @return [UpdateManager]
+     */
+    fun setListener(listener: UpdateListener): UpdateManager {
+        listenerJava = listener
         return this
     }
 
@@ -93,7 +144,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
 
     /**
      * Called at the time of initialization.
-     * Registering [stateUpdatedListener] here
+     * Registering [com.google.android.play.core.install.InstallStateUpdatedListener] here
      */
     init {
         activityRef.get()?.lifecycle?.addObserver(this)
@@ -107,13 +158,13 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         when {
-            options.isFlexibleUpdate && options.resumeUpdate ->
+            updateOptions.isFlexibleUpdate && updateOptions.resumeUpdate ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.installStatus() == InstallStatus.DOWNLOADED && !options.customNotification) updateSnackbar.show()
+                    if (it.installStatus() == InstallStatus.DOWNLOADED && !updateOptions.customNotification) snackbar?.show()
                 }
-            options.isImmediateUpdate && (options.resumeUpdate || !options.forceUpdateCancellable) ->
+            updateOptions.isImmediateUpdate && (updateOptions.resumeUpdate || !updateOptions.forceUpdateCancellable) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.updateAvailability() in options.immediateUpdateResumeStates) requestUpdate(
+                    if (it.updateAvailability() in updateOptions.immediateUpdateResumeStates) requestUpdate(
                         it
                     )
                 }
@@ -136,11 +187,11 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private fun getAppUpdateInfo() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
-                if (options.updateType == UpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
-                        && it.clientVersionStalenessDays() >= options.daysForFlexibleUpdate else true
+                if (updateOptions.updateType == UpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
+                        && it.clientVersionStalenessDays() >= updateOptions.daysForFlexibleUpdate else true
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && it.isUpdateTypeAllowed(options.updateType.value)
-                && it.updatePriority() >= options.updatePriority.value
+                && it.isUpdateTypeAllowed(updateOptions.updateType.value)
+                && it.updatePriority() >= updateOptions.updatePriority.value
                 && updateDatesSatisfied
             ) {
                 // Start an update.
@@ -157,7 +208,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
-            options.updateType.value,
+            updateOptions.updateType.value,
             activityRef.get(),
             REQ_CODE_APP_UPDATE
         )
@@ -171,9 +222,10 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      */
     private fun onStateUpdate(state: InstallState) {
         listener.invoke(InstallState(state))
+        listenerJava?.onStateUpdate(InstallState(state))
 
-        if (options.isFlexibleUpdate && state.installStatus() == InstallStatus.DOWNLOADED
-            && !options.customNotification
-        ) updateSnackbar.show()
+        if (updateOptions.isFlexibleUpdate && state.installStatus() == InstallStatus.DOWNLOADED
+            && !updateOptions.customNotification
+        ) snackbar?.show()
     }
 }

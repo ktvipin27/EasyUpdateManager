@@ -67,7 +67,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this lambda function to customize [UpdateManager]
+     * Use this lambda function to customize [UpdateManager].
      *
      * @param block [UpdateOptions]
      * @return [UpdateManager]
@@ -78,7 +78,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this function to customize [UpdateManager]
+     * Use this function to customize [UpdateManager].
      *
      * @param options [UpdateOptions]
      * @return [UpdateManager]
@@ -89,7 +89,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this lambda function to customize [SnackbarOptions]
+     * Use this lambda function to customize [SnackbarOptions].
      *
      * @param block [SnackbarOptions]
      * @return [UpdateManager]
@@ -100,7 +100,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this function to customize [Snackbar]
+     * Use this function to customize [Snackbar].
      *
      * @param options [SnackbarOptions]
      * @return [UpdateManager]
@@ -139,13 +139,13 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
 
     /**
      * Call this method to complete the update process.
-     * If you are using custom notification, then on user action, call this method to finish the update
+     * If you are using custom notification, then on user action, call this method to finish the update.
      */
     fun completeUpdate() = appUpdateManager.completeUpdate().also { logD("completeUpdate") }
 
     /**
      * Called at the time of initialization.
-     * Registering [com.google.android.play.core.install.InstallStateUpdatedListener] here
+     * Registering [com.google.android.play.core.install.InstallStateUpdatedListener] here.
      */
     init {
         activityRef.get()?.lifecycle?.addObserver(this)
@@ -155,7 +155,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
 
     /**
      * Called when activity lifecycle changed to onResume.
-     * Resumes the update based on configured [options]
+     * Resumes the update based on configured [options].
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
@@ -213,7 +213,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * starts update.
+     * Starts the update.
      *
      * @param appUpdateInfo AppUpdateInfo
      */
@@ -244,7 +244,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Display debug log with [EasyUpdateManager.TAG] and [message]
+     * Display debug log with [EasyUpdateManager.TAG] and [message].
      *
      * @param message message to display in log.
      */

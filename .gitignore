@@ -1,15 +1,32 @@
+# IDEA files
 *.iml
+*.iws
+*.ipr
+.idea
+app/src/main/gen/*
+
+# Gradle
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/vcs.xml
-.DS_Store
+local.properties
+/.gradle
 /build
+
+# IDE / Text editor files
+.nb-gradle
+.nb-gradle-properties
+*.sw[op]
+*~
+*.sublime-*
+.textmate
+.java-version
+
+# OS files
+*.DS_Store
+Thumbs.db
+app/gradle/wrapper/gradle-wrapper.jar
+app/gradlew
+app/gradlew.bat
+app/gradle/wrapper/gradle-wrapper.properties
 /captures
 .externalNativeBuild
 .cxx

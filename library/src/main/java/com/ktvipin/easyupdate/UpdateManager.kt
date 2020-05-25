@@ -17,6 +17,7 @@
 package com.ktvipin.easyupdate
 
 import android.content.ContextWrapper
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -140,7 +141,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * Call this method to complete the update process.
      * If you are using custom notification, then on user action, call this method to finish the update
      */
-    fun completeUpdate() = appUpdateManager.completeUpdate()
+    fun completeUpdate() = appUpdateManager.completeUpdate().also { logD("completeUpdate") }
 
     /**
      * Called at the time of initialization.
@@ -149,6 +150,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     init {
         activityRef.get()?.lifecycle?.addObserver(this)
         appUpdateManager.registerListener(stateUpdatedListener)
+        logD("Initialised")
     }
 
     /**
@@ -157,13 +159,17 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
+        logD("onResume : ")
         when {
             updateOptions.isFlexibleUpdate && updateOptions.resumeUpdate ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
-                    if (it.installStatus() == InstallStatus.DOWNLOADED && !updateOptions.customNotification) snackbar?.show()
+                    val isDownloaded = it.installStatus() == InstallStatus.DOWNLOADED
+                    logD("onResume : FlexibleUpdate, downloaded = $isDownloaded")
+                    if (isDownloaded && !updateOptions.customNotification) snackbar?.show()
                 }
             updateOptions.isImmediateUpdate && (updateOptions.resumeUpdate || !updateOptions.forceUpdate) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
+                    logD("onResume : ImmediateUpdate updateAvailability = ${it.updateAvailability()}")
                     if (it.updateAvailability() in updateOptions.immediateUpdateResumeStates) requestUpdate(
                         it
                     )
@@ -177,6 +183,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun onDestroy() {
+        logD("onDestroyed : unregistering listener")
         appUpdateManager.unregisterListener(stateUpdatedListener)
     }
 
@@ -185,18 +192,23 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * calls [requestUpdate] if update available.
      */
     private fun getAppUpdateInfo() {
+        logD("getAppUpdateInfo : checking update")
         appUpdateManager.appUpdateInfo.addOnSuccessListener {
             val updateDatesSatisfied =
                 if (updateOptions.updateType == UpdateType.FLEXIBLE) it.clientVersionStalenessDays() != null
                         && it.clientVersionStalenessDays() >= updateOptions.daysForFlexibleUpdate else true
+
+            logD("getAppUpdateInfo : updateDatesSatisfied = $updateDatesSatisfied")
+
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && it.isUpdateTypeAllowed(updateOptions.updateType.value)
                 && it.updatePriority() >= updateOptions.updatePriority.value
                 && updateDatesSatisfied
             ) {
+                logD("getAppUpdateInfo : updateConditionsSatisfied = true")
                 // Start an update.
                 requestUpdate(it)
-            }
+            } else logD("getAppUpdateInfo : updateConditionsSatisfied = false")
         }
     }
 
@@ -206,6 +218,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * @param appUpdateInfo AppUpdateInfo
      */
     private fun requestUpdate(appUpdateInfo: AppUpdateInfo) {
+        logD("requestUpdate : starting UpdateFlowForResult")
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             updateOptions.updateType.value,
@@ -221,6 +234,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * @param state InstallState
      */
     private fun onStateUpdate(state: InstallState) {
+        logD("onStateUpdate : install state changed, state = $state")
         listener.invoke(InstallState(state))
         listenerJava?.onStateUpdate(InstallState(state))
 
@@ -228,4 +242,11 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
             && !updateOptions.customNotification
         ) snackbar?.show()
     }
+
+    /**
+     * Display debug log with [EasyUpdateManager.TAG] and [message]
+     *
+     * @param message message to display in log.
+     */
+    private fun logD(message: String) = Log.d(EasyUpdateManager.TAG, message)
 }

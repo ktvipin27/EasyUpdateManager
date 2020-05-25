@@ -28,6 +28,11 @@ import java.lang.ref.WeakReference
 object EasyUpdateManager {
 
     /**
+     * Log tag.
+     */
+    internal const val TAG = "EasyUpdateManager"
+
+    /**
      * Request code for UpdateFlow.
      */
     internal const val REQ_CODE_APP_UPDATE = 54321

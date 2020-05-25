@@ -16,6 +16,7 @@
 
 package com.ktvipin27.easyupdate.sample
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin27.easyupdate.EasyUpdateManager
@@ -24,11 +25,16 @@ import com.ktvipin27.easyupdate.UpdateListener
 import com.ktvipin27.easyupdate.UpdateType
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class KotlinActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        btn_switch.text = "Switch to Java"
+        btn_switch.setOnClickListener {
+            startActivity(Intent(this, JavaActivity::class.java))
+        }
 
         button1.setOnClickListener {
             startFlexibleUpdate()

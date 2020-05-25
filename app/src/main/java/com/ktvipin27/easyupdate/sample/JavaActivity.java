@@ -17,8 +17,8 @@
 package com.ktvipin27.easyupdate.sample;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,10 +35,20 @@ import org.jetbrains.annotations.NotNull;
  * Created by Vipin KT on 21/05/20
  */
 public class JavaActivity extends AppCompatActivity {
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button btnSwitch = findViewById(R.id.btn_switch);
+        btnSwitch.setText("Switch to Kotlin");
+        btnSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +68,7 @@ public class JavaActivity extends AppCompatActivity {
     private void startFlexibleUpdate() {
         UpdateOptions options = new UpdateOptions();
         options.setCustomNotification(true);
-        options.setForceUpdateCancellable(true);
+        options.setForceUpdate(true);
 
         SnackbarOptions snackbarOptions = new SnackbarOptions();
         snackbarOptions.setActionText("RESTART");

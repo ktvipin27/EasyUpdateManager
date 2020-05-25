@@ -20,11 +20,11 @@ apply plugin: 'kotlin-android-extensions'
 
 ext {
     bintrayRepo = 'EasyUpdateManager'
-    bintrayName = 'com.ktvipin.easyupdate'
+    bintrayName = 'com.ktvipin.easyupdatemanager'
 
     publishedGroupId = 'com.ktvipin'
     libraryName = 'library'
-    artifact = 'easyupdate'
+    artifact = 'easyupdatemanager'
 
     libraryDescription = 'A wrapper for Android In-app update manager.'
 

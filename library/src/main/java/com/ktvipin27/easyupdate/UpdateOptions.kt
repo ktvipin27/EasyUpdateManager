@@ -51,7 +51,7 @@ data class UpdateOptions(
     /**
      * Stores a list of [UpdateAvailability], Immediate update will be resumed based on this states.
      */
-    val immediateUpdateResumeStates = mutableSetOf(
+    internal val immediateUpdateResumeStates = mutableSetOf(
         UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
         UpdateAvailability.UPDATE_AVAILABLE
     )
@@ -60,7 +60,7 @@ data class UpdateOptions(
      * Whether to allow cancellation of force update on clicking close button.
      * [immediateUpdateResumeStates] will be updated based on this value.
      */
-    var forceUpdateCancellable = false
+    var forceUpdate = false
         set(value) {
             field = value
             if (value)

@@ -162,7 +162,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
                     if (it.installStatus() == InstallStatus.DOWNLOADED && !updateOptions.customNotification) snackbar?.show()
                 }
-            updateOptions.isImmediateUpdate && (updateOptions.resumeUpdate || !updateOptions.forceUpdateCancellable) ->
+            updateOptions.isImmediateUpdate && (updateOptions.resumeUpdate || !updateOptions.forceUpdate) ->
                 appUpdateManager.appUpdateInfo.addOnSuccessListener {
                     if (it.updateAvailability() in updateOptions.immediateUpdateResumeStates) requestUpdate(
                         it

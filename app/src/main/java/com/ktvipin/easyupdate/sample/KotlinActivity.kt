@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate.sample
+package com.ktvipin.easyupdate.sample
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.ktvipin27.easyupdate.EasyUpdateManager
-import com.ktvipin27.easyupdate.InstallState
-import com.ktvipin27.easyupdate.UpdateListener
-import com.ktvipin27.easyupdate.UpdateType
+import com.ktvipin.easyupdate.EasyUpdateManager
+import com.ktvipin.easyupdate.InstallState
+import com.ktvipin.easyupdate.UpdateListener
+import com.ktvipin.easyupdate.UpdateType
 import kotlinx.android.synthetic.main.activity_main.*
 
 class KotlinActivity : AppCompatActivity() {

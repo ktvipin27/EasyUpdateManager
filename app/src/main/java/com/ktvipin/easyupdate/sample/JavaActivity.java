@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate.sample;
+package com.ktvipin.easyupdate.sample;
 
 import android.os.Bundle;
 import android.view.View;
@@ -23,11 +23,11 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ktvipin27.easyupdate.EasyUpdateManager;
-import com.ktvipin27.easyupdate.InstallState;
-import com.ktvipin27.easyupdate.SnackbarOptions;
-import com.ktvipin27.easyupdate.UpdateListener;
-import com.ktvipin27.easyupdate.UpdateOptions;
+import com.ktvipin.easyupdate.EasyUpdateManager;
+import com.ktvipin.easyupdate.InstallState;
+import com.ktvipin.easyupdate.SnackbarOptions;
+import com.ktvipin.easyupdate.UpdateListener;
+import com.ktvipin.easyupdate.UpdateOptions;
 
 import org.jetbrains.annotations.NotNull;
 

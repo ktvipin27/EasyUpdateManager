@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate
 
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability

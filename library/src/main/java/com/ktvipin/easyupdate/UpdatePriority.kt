@@ -14,18 +14,36 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate
 
 /**
- * Install updates will be delivered through this interface.
+ * Identifiers for different update priority.
  *
- * Created by Vipin KT on 24/05/20
+ * Created by Vipin KT on 19/05/20
  */
-interface UpdateListener {
+enum class UpdatePriority(val value: Int) {
     /**
-     * will be triggered when a state update occurred.
-     *
-     * @param state [InstallState]
+     * low priority
      */
-    fun onStateUpdate(state: InstallState)
+    ONE(1),
+
+    /**
+     * in b/w low and medium
+     */
+    TWO(2),
+
+    /**
+     * medium priority
+     */
+    THREE(3),
+
+    /**
+     * in b/w medium & high
+     */
+    FOUR(4),
+
+    /**
+     * high priority
+     */
+    FIVE(5),
 }

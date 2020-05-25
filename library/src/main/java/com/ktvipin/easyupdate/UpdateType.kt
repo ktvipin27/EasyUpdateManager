@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate.library
+package com.ktvipin.easyupdate
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import com.google.android.play.core.install.model.AppUpdateType
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * Identifiers for the different types of developer triggered updates.
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * Created by Vipin KT on 07/05/20
  */
-class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
-    }
+enum class UpdateType(val value: Int) {
+    /**
+     * background download and installation
+     */
+    FLEXIBLE(AppUpdateType.FLEXIBLE),
+
+    /**
+     * update is critical for continued use of the app
+     */
+    IMMEDIATE(AppUpdateType.IMMEDIATE)
 }

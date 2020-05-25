@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate
 
 import android.graphics.Color
 import com.google.android.material.snackbar.Snackbar

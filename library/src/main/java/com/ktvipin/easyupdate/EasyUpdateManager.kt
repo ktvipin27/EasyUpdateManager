@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate
 
 import androidx.appcompat.app.AppCompatActivity
 import java.lang.ref.WeakReference

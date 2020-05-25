@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate
 
 import android.content.ContextWrapper
 import android.view.View
@@ -30,7 +30,7 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.ktvipin27.easyupdate.EasyUpdateManager.REQ_CODE_APP_UPDATE
+import com.ktvipin.easyupdate.EasyUpdateManager.REQ_CODE_APP_UPDATE
 import java.lang.ref.WeakReference
 
 /**
@@ -45,7 +45,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private var listener: ((state: com.ktvipin27.easyupdate.InstallState) -> Unit) = {}
+    private var listener: ((state: com.ktvipin.easyupdate.InstallState) -> Unit) = {}
     private var listenerJava: UpdateListener? = null
     private var updateOptions = UpdateOptions()
     private var snackbarOptions = SnackbarOptions()
@@ -115,7 +115,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
      * @param block [InstallState]
      * @return [UpdateManager]
      */
-    fun listener(block: (state: com.ktvipin27.easyupdate.InstallState) -> Unit): UpdateManager {
+    fun listener(block: (state: com.ktvipin.easyupdate.InstallState) -> Unit): UpdateManager {
         listener = block
         return this
     }

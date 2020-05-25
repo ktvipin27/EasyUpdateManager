@@ -14,36 +14,19 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
+package com.ktvipin.easyupdate.library
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 /**
- * Identifiers for different update priority.
+ * Example local unit test, which will execute on the development machine (host).
  *
- * Created by Vipin KT on 19/05/20
+ * See [testing documentation](http://d.android.com/tools/testing).
  */
-enum class UpdatePriority(val value: Int) {
-    /**
-     * low priority
-     */
-    ONE(1),
-
-    /**
-     * in b/w low and medium
-     */
-    TWO(2),
-
-    /**
-     * medium priority
-     */
-    THREE(3),
-
-    /**
-     * in b/w medium & high
-     */
-    FOUR(4),
-
-    /**
-     * high priority
-     */
-    FIVE(5),
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
 }

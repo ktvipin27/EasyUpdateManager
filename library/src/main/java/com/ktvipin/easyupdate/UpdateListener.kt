@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.ktvipin27.easyupdate
-
-import com.google.android.play.core.install.model.AppUpdateType
+package com.ktvipin.easyupdate
 
 /**
- * Identifiers for the different types of developer triggered updates.
+ * Install updates will be delivered through this interface.
  *
- * Created by Vipin KT on 07/05/20
+ * Created by Vipin KT on 24/05/20
  */
-enum class UpdateType(val value: Int) {
+interface UpdateListener {
     /**
-     * background download and installation
+     * will be triggered when a state update occurred.
+     *
+     * @param state [InstallState]
      */
-    FLEXIBLE(AppUpdateType.FLEXIBLE),
-
-    /**
-     * update is critical for continued use of the app
-     */
-    IMMEDIATE(AppUpdateType.IMMEDIATE)
+    fun onStateUpdate(state: InstallState)
 }

@@ -16,7 +16,7 @@
 
 package com.ktvipin.easyupdate
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import java.lang.ref.WeakReference
 
 /**
@@ -43,5 +43,5 @@ object EasyUpdateManager {
      * @param activity Reference of the activity from where the [EasyUpdateManager] is called.
      * @return An instance of [UpdateManager].
      */
-    fun with(activity: AppCompatActivity) = UpdateManager(WeakReference(activity))
+    fun with(activity: FragmentActivity) = UpdateManager(WeakReference(activity))
 }

@@ -18,6 +18,30 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+    bintrayRepo = 'EasyUpdateManager'
+    bintrayName = 'com.ktvipin.easyupdate'
+
+    publishedGroupId = 'com.ktvipin'
+    libraryName = 'library'
+    artifact = 'easyupdate'
+
+    libraryDescription = 'A wrapper for Android In-app update manager.'
+
+    siteUrl = 'https://github.com/ktvipin27/EasyUpdateManager'
+    gitUrl = 'https://github.com/ktvipin27/EasyUpdateManager.git'
+
+    libraryVersion = '1.0.0-beta'
+
+    developerId = 'ktvipin27'
+    developerName = 'Vipin KT'
+    developerEmail = 'ktvipin27@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -26,7 +50,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0-beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -39,16 +63,16 @@ android {
         }
     }
 
+    tasks.withType(Javadoc).all {
+        enabled = false
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'com.google.android.play:core:1.7.3'
     implementation 'com.google.android.material:material:1.1.0'
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+apply from: 'publish.gradle'

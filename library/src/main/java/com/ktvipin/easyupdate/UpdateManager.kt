@@ -19,7 +19,7 @@ package com.ktvipin.easyupdate
 import android.content.ContextWrapper
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference
  *
  * Created by Vipin KT on 08/05/20
  */
-class UpdateManager internal constructor(private val activityRef: WeakReference<AppCompatActivity>) :
+class UpdateManager internal constructor(private val activityRef: WeakReference<FragmentActivity>) :
     ContextWrapper(activityRef.get()), LifecycleObserver {
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }

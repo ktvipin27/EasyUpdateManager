@@ -1,4 +1,5 @@
 # EasyUpdateManager
+[ ![Download](https://api.bintray.com/packages/ktvipin27/EasyUpdateManager/com.ktvipin.easyupdatemanager/images/download.svg) ](https://bintray.com/ktvipin27/EasyUpdateManager/com.ktvipin.easyupdatemanager/_latestVersion)
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/zerobranch/android-remote-debugger/blob/master/LICENSE)
 
 A wrapper for Android [In-App-Update Library](https://developer.android.com/guide/playcore/in-app-updates)
@@ -24,6 +25,31 @@ There are two update modes.
     
  <img src="https://developer.android.com/images/app-bundle/immediate_flow.png" alt="" width="350"></p>
 
+## Installation
+
+Add this in your app's build.gradle file:
+
+<details open>
+<summary>Groovy</summary>
+  
+```groovy
+  dependencies {
+       implementation 'com.ktvipin:easyupdatemanager:1.0.0-beta'
+  }
+```
+
+</details>
+<details open>
+<summary>Kotlin</summary>
+  
+```kotlin
+  dependencies {
+       implementation("com.ktvipin:easyupdatemanager:1.0.0-beta")
+  }
+```
+
+</details>
+
 ## Usage
 
 A simple implementation of the EasyUpdateManager is
@@ -44,6 +70,7 @@ EasyUpdateManager
     .with(this)
     .options {
         resumeUpdate = true
+        forceUpdate = true
         updateType = UpdateType.IMMEDIATE
         updatePriority = UpdatePriority.FIVE
         daysForFlexibleUpdate = 2
@@ -56,9 +83,10 @@ EasyUpdateManager
 
 | Option                  | Description                                                                                                                                                                                 | Values                                                                                                                             | Default Value            |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
-| `updateType`            | Type of update                                                                                                                                                                              | UpdateType.FLEXIBLE, UpdateType.IMMEDIATE                                                                                | UpdateType.FLEXIBLE |
-| `resumeUpdate`          | Whether to resume updates or not if the user leaves the screen and come back after some time.                                                                                                | true, false                                                                                                                        | true                     |
-| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | UpdatePriority.ONE, UpdatePriority.TWO,  UpdatePriority.THREE,  UpdatePriority.FOUR,  UpdatePriority.FIVE | UpdatePriority.ONE  |
+| `updateType`            | Type of update                                                                                                                                                                              | UpdateType.FLEXIBLE, UpdateType.IMMEDIATE                                                                                          | UpdateType.FLEXIBLE      |
+| `resumeUpdate`          | Whether to resume updates or not if the user leaves the screen and come back after some time.                                                                                               | true, false                                                                                                                        | true                     |
+| `forceUpdate`           | Whether to force the user to install the update (available only for `IMMEDIATE` updates).                                                                                                   | true, false                                                                                                                        | true                     |
+| `updatePriority`        | Check the priority level for a given update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-priority))                                                       | UpdatePriority.ONE, UpdatePriority.TWO,  UpdatePriority.THREE,  UpdatePriority.FOUR,  UpdatePriority.FIVE                          | UpdatePriority.ONE       |
 | `daysForFlexibleUpdate` | To check for the number of days that have passed since the Google Play Store learns of an update ([more info](https://developer.android.com/guide/playcore/in-app-updates#check-staleness)) | Any Integer                                                                                                                        | 0                        |
 | `customNotification`    | To show some custom alert instead of the snackbar                                                                                                                                           | true, false                                                                                                                        | false                    |
 

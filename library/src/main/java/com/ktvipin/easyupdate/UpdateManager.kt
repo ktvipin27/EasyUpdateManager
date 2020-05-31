@@ -46,8 +46,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val stateUpdatedListener = InstallStateUpdatedListener { onStateUpdate(it) }
 
-    private var listener: ((state: com.ktvipin.easyupdate.InstallState) -> Unit) = {}
-    private var listenerJava: UpdateListener? = null
+    private var listener: UpdateListener? = null
     private var updateOptions = UpdateOptions()
     private var snackbarOptions = SnackbarOptions()
     private var isStarted = false
@@ -68,22 +67,23 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this lambda function to customize [UpdateManager].
+     * For accessing the current options.
      *
-     * @param block [UpdateOptions]
+     * @return [UpdateOptions]
+     */
+    fun getOptions() = updateOptions
+
+    /**
+     * Use this function to customize [UpdateManager].
+     * Lambda alternative for [setOptions]
+     *
+     * @param block [UpdateOptions] as lambda.
      * @return [UpdateManager]
      */
     fun options(block: UpdateOptions.() -> Unit): UpdateManager {
         block(updateOptions)
         return this
     }
-
-    /**
-     * For accessing the current options.
-     *
-     * @return [UpdateOptions]
-     */
-    fun getOptions() = updateOptions
 
     /**
      * Use this function to customize [UpdateManager].
@@ -97,7 +97,8 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Use this lambda function to customize [SnackbarOptions].
+     * Use this function to customize [Snackbar].
+     * Lambda alternative for [setSnackbar]
      *
      * @param block [SnackbarOptions]
      * @return [UpdateManager]
@@ -119,24 +120,29 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     }
 
     /**
-     * Install updates will be delivered through this function.
+     * Set install updates listener.
+     * Lambda alternative for [setListener]
      *
-     * @param block [InstallState]
+     * @param block lambda function to trigger on listener trigger, has param [InstallState]
      * @return [UpdateManager]
      */
     fun listener(block: (state: com.ktvipin.easyupdate.InstallState) -> Unit): UpdateManager {
-        listener = block
+        this.listener = object : UpdateListener{
+            override fun onStateUpdate(state: com.ktvipin.easyupdate.InstallState) {
+                block(state)
+            }
+        }
         return this
     }
 
     /**
-     * Install updates will be delivered through this function.
+     * Set install updates listener.
      *
-     * @param listener [InstallState]
+     * @param listener [UpdateListener]
      * @return [UpdateManager]
      */
     fun setListener(listener: UpdateListener): UpdateManager {
-        listenerJava = listener
+        this.listener = listener
         return this
     }
 
@@ -258,8 +264,7 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private fun onStateUpdate(state: InstallState) {
         val installState = InstallState(state)
         logD("onStateUpdate : install state changed, state = $installState")
-        listener.invoke(installState)
-        listenerJava?.onStateUpdate(installState)
+        listener?.onStateUpdate(installState)
 
         if (updateOptions.isFlexibleUpdate && state.installStatus() == InstallStatus.DOWNLOADED
             && !updateOptions.customNotification

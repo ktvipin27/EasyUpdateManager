@@ -17,6 +17,7 @@
 package com.ktvipin.easyupdate.sample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,9 +26,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.ktvipin.easyupdate.EasyUpdateManager;
 import com.ktvipin.easyupdate.InstallState;
-import com.ktvipin.easyupdate.SnackbarOptions;
 import com.ktvipin.easyupdate.UpdateListener;
 import com.ktvipin.easyupdate.UpdateOptions;
+import com.ktvipin.easyupdate.UpdateType;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,30 +68,31 @@ public class JavaActivity extends AppCompatActivity {
 
     private void startFlexibleUpdate() {
         UpdateOptions options = new UpdateOptions();
-        options.setCustomNotification(true);
-        options.setForceUpdate(true);
-
-        SnackbarOptions snackbarOptions = new SnackbarOptions();
-        snackbarOptions.setActionText("RESTART");
+        options.setUpdateType(UpdateType.FLEXIBLE);
 
         EasyUpdateManager
                 .INSTANCE
                 .with(this)
+                .setOptions(options)
                 .setListener(new UpdateListener() {
                     @Override
                     public void onStateUpdate(@NotNull InstallState state) {
-
+                        Log.d("EasyUpdateManager", "onStateUpdate: " + state.toString());
                     }
                 })
-                .setOptions(options)
-                .setSnackbar(snackbarOptions)
                 .startUpdate();
     }
 
     private void startImmediateUpdate() {
+        UpdateOptions options = new UpdateOptions();
+        options.setCustomNotification(true);
+        options.setForceUpdate(true);
+        options.setUpdateType(UpdateType.IMMEDIATE);
+
         EasyUpdateManager
                 .INSTANCE
                 .with(this)
+                .setOptions(options)
                 .startUpdate();
     }
 }

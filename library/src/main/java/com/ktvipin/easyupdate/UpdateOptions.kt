@@ -16,7 +16,6 @@
 
 package com.ktvipin.easyupdate
 
-import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
@@ -36,11 +35,11 @@ data class UpdateOptions(
     /**
      * Update priority , integer value between 0 and 5, must be one of the  [UpdatePriority]
      */
-    var updatePriority: UpdatePriority = UpdatePriority.ONE,
+    //var updatePriority: UpdatePriority = UpdatePriority.ONE,
     /**
      * Days to wait before notifying the user with a flexible update.
      */
-    var daysForFlexibleUpdate: Int = 0,
+    //var daysForFlexibleUpdate: Int = 0,
     /**
      * Pass true, if you want to show custom notification.
      * [SnackbarOptions] will not show if set to true.
@@ -52,8 +51,7 @@ data class UpdateOptions(
      * Stores a list of [UpdateAvailability], Immediate update will be resumed based on this states.
      */
     internal val immediateUpdateResumeStates = mutableSetOf(
-        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS,
-        UpdateAvailability.UPDATE_AVAILABLE
+        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
     )
 
     /**
@@ -64,18 +62,20 @@ data class UpdateOptions(
         set(value) {
             field = value
             if (value)
-                immediateUpdateResumeStates.remove(UpdateAvailability.UPDATE_AVAILABLE)
-            else
                 immediateUpdateResumeStates.add(UpdateAvailability.UPDATE_AVAILABLE)
+            else
+                immediateUpdateResumeStates.remove(UpdateAvailability.UPDATE_AVAILABLE)
         }
 
     /**
      * Returns true if AppUpdateType is FLEXIBLE
      */
-    internal val isFlexibleUpdate = updateType.value == AppUpdateType.FLEXIBLE
+    internal val isFlexibleUpdate: Boolean
+        get() = updateType == UpdateType.FLEXIBLE
 
     /**
      * Returns true if AppUpdateType is IMMEDIATE
      */
-    internal val isImmediateUpdate = updateType.value == AppUpdateType.IMMEDIATE
+    internal val isImmediateUpdate: Boolean
+        get() = updateType == UpdateType.IMMEDIATE
 }

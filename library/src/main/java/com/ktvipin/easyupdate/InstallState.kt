@@ -61,4 +61,32 @@ class InstallState(private val installState: InstallState) {
 
     val installErrorCode: Int
         get() = installState.installErrorCode()
+
+    val currentStatus: String
+        get() = when (installState.installStatus()) {
+            InstallStatus.CANCELED -> "Canceled"
+            InstallStatus.DOWNLOADED -> "Downloaded"
+            InstallStatus.DOWNLOADING -> "Downloading"
+            InstallStatus.FAILED -> "Failed"
+            InstallStatus.INSTALLED -> "Installed"
+            InstallStatus.INSTALLING -> "Installing"
+            InstallStatus.PENDING -> "Pending"
+            InstallStatus.UNKNOWN -> "Unknown"
+            else -> ""
+        }
+
+    override fun toString(): String {
+        return "isDownloading = $isDownloading" +
+                " isDownloaded = $isDownloaded" +
+                " isFailed = $isFailed" +
+                " isInstalled = $isInstalled" +
+                " isInstalling = $isInstalling" +
+                " isCanceled = $isCanceled" +
+                " isPending = $isPending" +
+                " isUnknown = $isUnknown" +
+                " isCanceled = $isCanceled" +
+                " bytesDownloaded = $bytesDownloaded" +
+                " totalBytesToDownload = $totalBytesToDownload" +
+                " installErrorCode = $installErrorCode"
+    }
 }

@@ -19,10 +19,10 @@ package com.ktvipin.easyupdate.sample
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.ktvipin.easyupdate.EasyUpdateManager
-import com.ktvipin.easyupdate.InstallState
-import com.ktvipin.easyupdate.UpdateListener
 import com.ktvipin.easyupdate.UpdateType
+import com.ktvipin.easyupdate.logD
 import kotlinx.android.synthetic.main.activity_main.*
 
 class KotlinActivity : AppCompatActivity() {
@@ -43,11 +43,23 @@ class KotlinActivity : AppCompatActivity() {
         button2.setOnClickListener {
             startImmediateUpdate()
         }
+
+        textView2.text = getString(R.string.label_version, BuildConfig.VERSION_CODE)
     }
 
     private fun startFlexibleUpdate() {
         EasyUpdateManager
             .with(this)
+            .options {
+                updateType = UpdateType.FLEXIBLE
+            }
+            .snackbar {
+                actionText = "Install"
+                actionTextColor = ContextCompat.getColor(this@KotlinActivity, R.color.colorAccent)
+            }
+            .listener {
+                logD("listening FlexibleUpdate")
+            }
             .startUpdate()
     }
 
@@ -57,17 +69,14 @@ class KotlinActivity : AppCompatActivity() {
             .options {
                 updateType = UpdateType.IMMEDIATE
             }
-            .snackbar {
-
-            }
             .listener {
-
+                logD("listening ImmediateUpdate")
             }
-            .setListener(object : UpdateListener {
-                override fun onStateUpdate(state: InstallState) {
-
-                }
-            })
             .startUpdate()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        logD("requestCode = $requestCode, resultCode = $resultCode")
     }
 }

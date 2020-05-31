@@ -16,7 +16,6 @@
 
 package com.ktvipin.easyupdate
 
-import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 
 /**
@@ -36,11 +35,11 @@ data class UpdateOptions(
     /**
      * Update priority , integer value between 0 and 5, must be one of the  [UpdatePriority]
      */
-    var updatePriority: UpdatePriority = UpdatePriority.ONE,
+    //var updatePriority: UpdatePriority = UpdatePriority.ONE,
     /**
      * Days to wait before notifying the user with a flexible update.
      */
-    var daysForFlexibleUpdate: Int = 0,
+    //var daysForFlexibleUpdate: Int = 0,
     /**
      * Pass true, if you want to show custom notification.
      * [SnackbarOptions] will not show if set to true.

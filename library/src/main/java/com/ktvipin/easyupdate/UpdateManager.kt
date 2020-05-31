@@ -31,7 +31,6 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.ktvipin.easyupdate.EasyUpdateManager.REQ_CODE_APP_UPDATE
-import java.lang.Exception
 import java.lang.ref.WeakReference
 
 /**
@@ -228,11 +227,9 @@ class UpdateManager internal constructor(private val activityRef: WeakReference<
     private fun getAppUpdateInfo() {
         logD("Checking updates...")
         updateInfo({ info ->
-            val updateDatesSatisfied =
+            /*val updateDatesSatisfied =
                 if (updateOptions.updateType == UpdateType.FLEXIBLE) info.clientVersionStalenessDays() != null
-                        && info.clientVersionStalenessDays() >= updateOptions.daysForFlexibleUpdate else true
-
-            logD("getAppUpdateInfo : updateDatesSatisfied = $updateDatesSatisfied")
+                        && info.clientVersionStalenessDays() >= updateOptions.daysForFlexibleUpdate else true*/
 
             if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && info.isUpdateTypeAllowed(updateOptions.updateType.value)

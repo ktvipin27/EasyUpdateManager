@@ -34,7 +34,7 @@ Add this in your app's build.gradle file:
   
 ```groovy
   dependencies {
-       implementation 'com.ktvipin:easyupdatemanager:1.0.0-beta'
+       implementation 'com.ktvipin:easyupdatemanager:1.0.0-beta2'
   }
 ```
 
@@ -44,7 +44,7 @@ Add this in your app's build.gradle file:
   
 ```kotlin
   dependencies {
-       implementation("com.ktvipin:easyupdatemanager:1.0.0-beta")
+       implementation("com.ktvipin:easyupdatemanager:1.0.0-beta2")
   }
 ```
 

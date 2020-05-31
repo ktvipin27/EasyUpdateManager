@@ -31,7 +31,7 @@ ext {
     siteUrl = 'https://github.com/ktvipin27/EasyUpdateManager'
     gitUrl = 'https://github.com/ktvipin27/EasyUpdateManager.git'
 
-    libraryVersion = '1.0.0-beta'
+    libraryVersion = '1.0.0-beta2'
 
     developerId = 'ktvipin27'
     developerName = 'Vipin KT'
@@ -50,7 +50,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.0-beta"
+        versionName "1.0.0-beta2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
